@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pydantic
+python-multipart
+transformers
+torch
+torchvision
+pillow
+httpx
+
