@@ -8,10 +8,11 @@ app = FastAPI()
 
 HF_API_TOKEN = os.getenv("HF_API_TOKEN")
 
+
 # CORS middleware to connect frontend and backend running on different ports
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://food-gpt-blush.vercel.app/"],  # Or specify your frontend URL
+    allow_origins=["https://food-gpt-blush.vercel.app"],  # Or specify your frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
