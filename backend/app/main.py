@@ -44,14 +44,10 @@ async def generate_recipe(request: Request):
                 "inputs": prompt
             }
         )
-    if response.status_code != 200:
-        return {"error": f"Hugging Face API returned error {response.status_code}: {response.text}"}
+    #if response.status_code != 200:
+     #   return {"error": f"Hugging Face API returned error {response.status_code}: {response.text}"}
 
-    #result = response.json()
-    #print(result) # Debugging line to check the response structure
-    try:
-        result = response.json()  # Replace with your actual call
-        print("Result:", result)
-    except Exception as e:
-        print("Error:", e)
+    result = response.json()
+    #console.log.print(result) # Debugging line to check the response structure
+    
     return {"response": result.get("generated_text", "No response received from LLaMA.")}
