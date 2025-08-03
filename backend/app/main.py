@@ -22,29 +22,51 @@ app.add_middleware(
 def read_root():
     return {"message": "FoodGPT backend is running"}
 
+#@app.post("/generate-recipe/")
+#async def generate_recipe(request: Request):
+    #data = await request.json()
+  #  ingredients = data.get("ingredients")
+
+ #   if not ingredients:
+   #     return {"error": "No ingredients provided."}
+#
+    #prompt = f"Suggest a healthy recipes using only the following ingredients: {ingredients}. Also include estimated calories and nutritional values."
+
+    #async with httpx.AsyncClient(timeout=120) as client:
+    #    response = await client.post(
+    #        # ✅ Switch to Hugging Face API endpoint
+    #        "https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-3B-Instruct",
+    #        headers={
+    #            # ✅ Inject secure Authorization header
+    #            "Authorization": f"Bearer {HF_API_TOKEN}"
+    #        },
+    #        json={
+   #             "inputs": prompt
+  #          }
+ #       )
 @app.post("/generate-recipe/")
 async def generate_recipe(request: Request):
     data = await request.json()
-    ingredients = data.get("ingredients")
+    if not data:
+        raise HTTPException(status_code=400, detail="No data provided")
 
-    if not ingredients:
-        return {"error": "No ingredients provided."}
+    if "ingredients" not in data or not data["ingredients"]:
+        raise HTTPException(status_code=400, detail="No ingredients provided")
 
-    prompt = f"Suggest a healthy recipes using only the following ingredients: {ingredients}. Also include estimated calories and nutritional values."
+    prompt = f"Suggest a healthy recipes using only the following ingredients: {data['ingredients']}. Also include estimated calories and nutritional values."
 
     async with httpx.AsyncClient(timeout=120) as client:
-        response = await client.post(
-            # ✅ Switch to Hugging Face API endpoint
-            "https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-3B-Instruct",
-            headers={
-                # ✅ Inject secure Authorization header
-                "Authorization": f"Bearer {HF_API_TOKEN}"
-            },
-            json={
-                "inputs": prompt
-            }
-        )
-    #if response.status_code != 200:
+        try:
+            response = await client.post(
+                "https://api-inference.huggingface.co/models/llama3.2",
+                headers={"Authorization": f"Bearer {HF_API_TOKEN}"},
+                json={"inputs": prompt},
+            )
+            response.raise_for_status()
+            result = response.json()
+            return {"response": result.get("generated_text", "No response received from LLaMA.")}
+        except httpx.HTTPError as e:
+            raise HTTPException(status_code=e.status_code, detail=str(e))
      #   return {"error": f"Hugging Face API returned error {response.status_code}: {response.text}"}
 
     result = response.json()
