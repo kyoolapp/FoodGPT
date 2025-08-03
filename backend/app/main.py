@@ -12,7 +12,7 @@ HF_API_TOKEN = os.getenv("HF_API_TOKEN")
 # CORS middleware to connect frontend and backend running on different ports
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://food-gpt-blush.vercel.app"],  # Or specify your frontend URL
+    allow_origins=["*"],  # Or specify your frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -48,4 +48,5 @@ async def generate_recipe(request: Request):
         return {"error": f"Hugging Face API returned error {response.status_code}: {response.text}"}
 
     result = response.json()
+    print(result) # Debugging line to check the response structure
     return {"response": result.get("generated_text", "No response received from LLaMA.")}
