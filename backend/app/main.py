@@ -2,8 +2,11 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Request
 import httpx
+import os
 
 app = FastAPI()
+
+HF_API_TOKEN = os.getenv("HF_API_TOKEN")
 
 # CORS middleware to connect frontend and backend running on different ports
 app.add_middleware(
@@ -30,11 +33,14 @@ async def generate_recipe(request: Request):
 
     async with httpx.AsyncClient(timeout=120) as client:
         response = await client.post(
-            "http://localhost:11434/api/generate",
+            # ✅ Switch to Hugging Face API endpoint
+            "https://api-inference.huggingface.co/models/llama3.2",
+            headers={
+                # ✅ Inject secure Authorization header
+                "Authorization": f"Bearer {HF_API_TOKEN}"
+            },
             json={
-                "model": "llama3.2",
-                "prompt": prompt,
-                "stream": False
+                "inputs": prompt
             }
         )
 
