@@ -2,8 +2,14 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Request
 import httpx
+import os
 
 app = FastAPI()
+
+
+# Replace with your actual Hugging Face token
+HF_API_TOKEN = os.getenv("HF_API_TOKEN", "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")
+HF_MODEL_URL = "https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-3B-Instruct"
 
 # CORS middleware to connect frontend and backend running on different ports
 app.add_middleware(
@@ -30,13 +36,17 @@ async def generate_recipe(request: Request):
 
     async with httpx.AsyncClient(timeout=120) as client:
         response = await client.post(
-            "http://localhost:11434/api/generate",
+            HF_MODEL_URL,
+            headers={
+                "Authorization": f"Bearer {HF_API_TOKEN}",
+                "Content-Type": "application/json"
+            },
             json={
-                "model": "llama3.2",
-                "prompt": prompt,
-                "stream": False
+                "inputs": prompt
             }
         )
 
     result = response.json()
     return {"response": result.get("response", "No response received from LLaMA.")}
+
+
