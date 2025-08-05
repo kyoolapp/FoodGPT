@@ -29,15 +29,13 @@ async def generate_recipe(request: Request):
     if not ingredients: return {"error": "No ingredients provided."} 
     prompt = f"Suggest a healthy recipes using only the following ingredients: {ingredients}. Also include estimated calories and nutritional values." 
     async with httpx.AsyncClient(timeout=240) as client: response = await client.post( 
-        # ✅ Switch to Hugging Face API endpoint 
-        "https://api-inference.huggingface.co/models/llama3.2", 
-        headers={ 
-            # ✅ Inject secure Authorization header 
-            "Authorization": f"Bearer {HF_API_TOKEN}" 
-            }, 
-            json={ 
-                "inputs": prompt 
-                } 
-            ) 
+       "http://localhost:11434/api/generate",
+            json={
+                "model": "llama3.2",
+                "prompt": prompt,
+                "stream": False
+            }
+        )
+ 
     result = response.json() 
-    return {"response": result.get("generated_text", "No response received from LLaMA.")}
+    return {"response": result.get("response", "No response received from LLaMA.")}
