@@ -6,7 +6,7 @@ import os
 
 app = FastAPI()
 
-HF_API_TOKEN = os.getenv("HF_API_TOKEN")
+#HF_API_TOKEN = os.getenv("HF_API_TOKEN")
 
 
 # CORS middleware to connect frontend and backend running on different ports
@@ -29,7 +29,7 @@ async def generate_recipe(request: Request):
     if not ingredients: return {"error": "No ingredients provided."} 
     prompt = f"Suggest a healthy recipes using only the following ingredients: {ingredients}. Also include estimated calories and nutritional values." 
     async with httpx.AsyncClient(timeout=240) as client: response = await client.post( 
-       "http://localhost:11434/api/generate",
+       f"http://34.10.52.43:11434/api/generate",
             json={
                 "model": "llama3.2",
                 "prompt": prompt,
