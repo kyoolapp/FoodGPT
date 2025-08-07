@@ -29,7 +29,7 @@ async def generate_recipe(request: Request):
     if not ingredients: return {"error": "No ingredients provided."} 
     prompt = f"Suggest a healthy recipes using only the following ingredients: {ingredients}. Also include estimated calories and nutritional values." 
     async with httpx.AsyncClient(timeout=240) as client: response = await client.post( 
-       f"http://34.10.52.43:37837/api/generate",
+       f"http://35.238.130.158:11434/api/generate", 
             json={
                 "model": "llama3.2",
                 "prompt": prompt,
