@@ -12,7 +12,7 @@ export default function FoodGPT() {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.post('https://foodgpt-1.onrender.com/generate-recipe/', {
+      const res = await axios.post('http://34.61.227.148:8000/generate-recipe/', {
         ingredients: foodInput.split(',').map(i => i.trim()),
       });
       setRecipe(res.data.response);
