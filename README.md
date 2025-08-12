@@ -26,3 +26,6 @@ Also for now, the frontend in vercel is not working due to mixed content issues,
 The backend is working fine, if it connected to the frontend on my local machine, using npm start. 
 
 When you start the VM, the backend should automatically run like llama. Also remember to change the IP in the frontend. 
+
+Log: 18:18- 12 Aug 2025
+The backend is served with https now. Redeploying it to vercel now.
