@@ -15,3 +15,14 @@ To run the backend:
 Now open powershell, and get llama running, using "ollama serve" command. 
 
 Now you can input and use the model for now. 
+
+
+Log: 04:22- 12 Aug 2025
+Right now the LLM and the backend is hosted on GCP VM, and it's running. 
+if I turn it off and turn it on again, I need to change the external IP in the frontend. 
+
+Also for now, the frontend in vercel is not working due to mixed content issues, i.e, vercel is running https, and the backend is running on http. We have to serve the backend on https to fix this issue. I need a domain name, or the subdomain of kyoolapp.com to fix this. 
+
+The backend is working fine, if it connected to the frontend on my local machine, using npm start. 
+
+When you start the VM, the backend should automatically run like llama. Also remember to change the IP in the frontend. 
