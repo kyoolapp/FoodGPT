@@ -26,9 +26,19 @@ def read_root():
 async def generate_recipe(request: Request): 
     data = await request.json() 
     ingredients = data.get("ingredients") 
+    oven_option = data.get("oven_option")
+    time_option = data.get("time_option")
     if not ingredients: return {"error": "No ingredients provided."} 
-    prompt = f"Suggest a healthy recipes using only the following ingredients: {ingredients}. Also include estimated calories and nutritional values." 
-    async with httpx.AsyncClient(timeout=240) as client: response = await client.post( 
+    oven_text = ""
+    time_text=""
+    if oven_option:
+        oven_text = f" this recipe should be prepared {'with' if oven_option == 'with' else 'without'} an oven"
+        time_text = f" and I got {time_option} minutes"
+
+    prompt = f"Suggest a healthy recipes using only the following ingredients: {ingredients}.{oven_text},{time_text}. Also include estimated calories and nutritional values." 
+    #print("DEBUG prompt:", prompt)
+    async with httpx.AsyncClient(timeout=240) as client: 
+        response = await client.post( 
        f"http://localhost:11434/api/generate", 
             json={
                 "model": "llama3.2",
