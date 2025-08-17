@@ -21,5 +21,4 @@ Thumbs.db
 # Screenshots
 screen shots/
 #firebase
-
-./frontend\src\firebase.js
+frontend\src\firebase.js
