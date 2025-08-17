@@ -48,4 +48,5 @@ async def generate_recipe(request: Request):
         )
  
     result = response.json() 
+    
     return {"response": result.get("response", "No response received from LLaMA.")}

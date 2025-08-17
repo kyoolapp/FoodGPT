@@ -1,0 +1,74 @@
+.toggle-btn {
+    background-color: #000000;
+    border: 1px solid #000000;
+    border-radius: 99px;
+    width: 45px;
+    height: 25px;
+    transition: background-color 0.1s ease, border-color 0.2s ease;
+    cursor: pointer;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.748);
+    position: relative;
+}
+
+.toggle-btn .thumb {
+    height: 15px;
+    width: 15px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 99px;
+    transform: translateX(0);
+    transition: left 0.15s ease;
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.toggle-btn.toggled {
+    background-color: #ffffff;
+    border: 1px solid #000000;
+}
+
+.toggle-btn:hover {
+    border-color: #999;
+}
+
+.toggle-btn.toggled .thumb {
+    left: calc(50px - 25.5px);
+    background-color: #000000;
+}
+
+.generate-btn {
+    background-color: #000000;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 10px 0;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.748);
+    transition: background-color 0.3s ease;
+}
+
+.generate-btn:hover {
+    background-color: #7c7c7c;
+}
+.ingredients-input {
+    width: 60%;
+    padding: 15px 20px;
+    border: 1px solid #1b1b1b;
+    border-radius: 99px;
+    box-sizing: border-box;
+}
+
+.time-select {
+    
+    border: 2px solid #303030;
+    border-radius: 99px;
+    box-sizing: border-box;
+    padding: 10px 10px;
+    margin-left: 15px;
+}
