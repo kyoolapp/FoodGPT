@@ -7,4 +7,5 @@ torch
 torchvision
 pillow
 httpx
+google-cloud-firestore
 
