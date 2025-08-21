@@ -17,8 +17,8 @@ export default function FoodGPT({userName}) {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.post('https://api.kyoolapp.com/generate-recipe/', {
-        ingredients: foodInput.split(',').map(i => i.trim()),
+      const res = await axios.post('http://localhost:8000/generate-recipe/', {
+        ingredients: foodInput.split(',').map(i => i.trim()), 
         oven_option: toggled ? 'with' : 'without',
         time_option: timeOption ? parseInt(timeOption) : null,
         serving_option: serving ? parseInt(serving) : null,
