@@ -14,25 +14,23 @@ function App() {
   const [user, setUser] = useState(null);
   const [firstLogin, setFirstLogin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [history, setHistory] = useState([]); 
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       
       if(currentUser){
-        try{
-          //Check if user exists in the database
-          const res = await axios.post("https:api.kyoolapp.com/check-user",{
-            uid: currentUser.uid
-          });
-          if(res.data.isNewUser){
-            setFirstLogin(true); //show signup page
-          }else{
-            setFirstLogin(false); //show main app
-          }
-        }catch(err){
-          console.error("Error checking user:", err);
-        }
+        
+
+        try {
+    const res = await axios.get(`http://localhost:8000/history/${currentUser.displayName || currentUser.email}`);
+    setHistory(res.data.history);
+    console.log("Current User:", res.data.history);
+  } catch (err) {
+    console.error("Error fetching history:", err);
+  }
+  
         }
         setLoading(false);
     });
@@ -57,9 +55,23 @@ function App() {
       <p className="app-slogan">Cook cool with Kyool</p>
       <div className="welcome-header" style={{ marginLeft: '10px', marginTop: '20px' }}>
       <h1 className="greet-user">Welcome, {user.displayName || user.email}</h1>
-      <FoodGPT />
+      <FoodGPT userName={user.displayName||user.email}/>
 
-      
+
+    {history.length > 0 && (
+    <div className="recent-history" style={{ margin: '20px' }}>
+    <h2>Recent Recipes</h2>
+    <ul>
+      {history.map(item => (
+        <li key={item.id} style={{ marginBottom: '10px' }}>
+          <strong>Ingredients:</strong> {item.ingredients.join(", ")}<br/>
+          <strong>Recipe:</strong> {item.response}
+        </li>
+      ))}
+    </ul>
+    </div>
+    )}
+    
     </div>
     <div >
     <button 

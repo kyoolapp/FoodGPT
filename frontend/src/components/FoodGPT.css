@@ -72,3 +72,13 @@
     padding: 10px 10px;
     margin-left: 15px;
 }
+
+
+.serving-select {
+    
+    border: 2px solid #303030;
+    border-radius: 99px;
+    box-sizing: border-box;
+    padding: 10px 10px;
+    margin-left: 15px;
+}

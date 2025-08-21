@@ -29,3 +29,7 @@ When you start the VM, the backend should automatically run like llama. Also rem
 
 Log: 18:18- 12 Aug 2025
 The backend is served with https now. Redeploying it to vercel now.
+
+
+Log: 05:33 - 17 Aug 2025
+Google auth, login page, are connected and can be used to create account. Users have to login before we can use the website. It is deployed too.
