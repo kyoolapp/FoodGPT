@@ -24,7 +24,7 @@ app.add_middleware(
 def read_root():
     return {"message": "FoodGPT backend is running"}
 
-db = firestore.Client.from_service_account_json("../keys/foodgpt-468206-c3e7e967c31b.json")
+db = firestore.Client.from_service_account_json("../keys/foodgpt-468206-aebce83d9326.json")
 
 
 
