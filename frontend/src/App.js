@@ -24,7 +24,7 @@ function App() {
         
 
         try {
-    const res = await axios.get(`http://localhost:8000/history/${currentUser.displayName || currentUser.email}`);
+    const res = await axios.get(`https://api.kyoolapp.com/history/${currentUser.displayName || currentUser.email}`);
     setHistory(res.data.history);
     console.log("Current User:", res.data.history);
   } catch (err) {
