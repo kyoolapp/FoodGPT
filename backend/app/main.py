@@ -5,6 +5,7 @@ import httpx
 import os
 from google.cloud import firestore
 import datetime
+import json
 
 app = FastAPI()
 
@@ -42,7 +43,7 @@ async def generate_recipe(request: Request):
     serving_text= ""
     if oven_option:
         oven_text = f" this recipe should be prepared {'with' if oven_option == 'with' else 'without'} an oven"
-        time_text = f" and I got {time_option} minutes"
+        time_text = f" and I got upto {time_option} minutes"
         serving_text = f" for {serving_option} serving{'s' if serving_option > 1 else ''}"
 
     prompt = (
@@ -78,18 +79,30 @@ async def generate_recipe(request: Request):
     result = response.json() 
     recipe_response = result.get("response", "No response received from LLaMA.")
 
+
+    try:
+        recipe_data = json.loads(recipe_response)
+    except json.JSONDecodeError:
+        # If LLaMA sends invalid JSON, fall back to raw string
+        recipe_data = {"raw_response": recipe_response}
+
+
+    print("DEBUG recipe_data:", recipe_data)
+
+
     entry = {
-        "ingredients": ingredients,
+        #"ingredients": ingredients,
         "oven_option": oven_option,
         "time_option": time_option,
-        "response": recipe_response,
+        #"response": recipe_response,
         "times": datetime.datetime.utcnow().isoformat(),
         "serving": serving_option,
         "user_id": user_id,
+        **recipe_data  # Unpack structured recipe fields directly
     }
     db.collection("user-foodgpt").add(entry)
 
-    return {"response": recipe_response}
+    return {"response": recipe_data}
 
 @app.get("/history/{user_id}")
 def get_history(user_id: str):

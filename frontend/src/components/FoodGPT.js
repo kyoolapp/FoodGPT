@@ -17,7 +17,7 @@ export default function FoodGPT({userName}) {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.post('https://api.kyoolapp.com/generate-recipe/', {
+      const res = await axios.post('http://localhost:8000/generate-recipe/', {
         ingredients: foodInput.split(',').map(i => i.trim()), 
         oven_option: toggled ? 'with' : 'without',
         time_option: timeOption ? parseInt(timeOption) : null,
@@ -118,16 +118,41 @@ export default function FoodGPT({userName}) {
       </div>
 
         
-      
-        
-
-        
+    
 
       {error && <p className="text-red-500">{error}</p>}
       {recipe && (
         <div className="bg-gray-100 p-4 rounded whitespace-pre-wrap">
-          {recipe}
-        </div>
+    <h2 className="font-bold text-lg mb-2">{recipe.recipe_name}</h2>
+
+    <h3 className="font-semibold">Ingredients:</h3>
+    <ul className="list-disc list-inside mb-2">
+      {recipe.ingredients && recipe.ingredients.map((ing, idx) => (
+        <li key={idx}>{ing}</li>
+      ))}
+    </ul>
+
+    <h3 className="font-semibold">Instructions:</h3>
+    <ol className="list-decimal list-inside mb-2">
+      {recipe.instructions && recipe.instructions.map((step, idx) => (
+        <li key={idx}>{step}</li>
+      ))}
+    </ol>
+
+    <h3 className="font-semibold">Estimated Calories:</h3>
+    <p>{recipe.estimated_calories}</p>
+
+    <h3 className="font-semibold">Nutritional Values:</h3>
+    {recipe.nutritional_values && (
+      <ul className="list-disc list-inside">
+        <li>Protein: {recipe.nutritional_values.protein}</li>
+        <li>Fat: {recipe.nutritional_values.fat}</li>
+        <li>Carbs: {recipe.nutritional_values.carbohydrates}</li>
+        <li>Sugar: {recipe.nutritional_values.sugar}</li>
+        <li>Fiber: {recipe.nutritional_values.fiber}</li>
+      </ul>
+    )}
+    </div>
       )}
 
     </div>
