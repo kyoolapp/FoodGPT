@@ -1,88 +1,105 @@
+// src/components/FoodGPT.jsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './FoodGPT.css';
 
-export default function FoodGPT({userName}) {
+/** Split input on commas only, trim, drop empties */
+function normalizeIngredients(input) {
+  if (!input) return [];
+  return String(input)
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean);
+}
+
+export default function FoodGPT({ userName }) {
+  const navigate = useNavigate();
+
   const [foodInput, setFoodInput] = useState('');
-  const [ovenOption, setOvenOption] = useState('with');
   const [timeOption, setTimeOption] = useState('10');
-  const [recipe, setRecipe] = useState('');
+  const [serving, setServing] = useState('1');
+  const [toggled, setToggled] = useState(false);   // oven toggle
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [toggled, setToggled] = useState(false);
-  const [serving, setServing] = useState('1');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
+
+    const ingredients = normalizeIngredients(foodInput);
+    if (!ingredients.length) {
+      setError('Please enter at least one ingredient (comma-separated).');
+      return;
+    }
+
+    setLoading(true);
     try {
       const res = await axios.post('https://api.kyoolapp.com/generate-recipe/', {
-        ingredients: foodInput.split(',').map(i => i.trim()), 
+        ingredients,
         oven_option: toggled ? 'with' : 'without',
-        time_option: timeOption ? parseInt(timeOption) : null,
-        serving_option: serving ? parseInt(serving) : null,
-        user_id: userName, // Pass the user ID
+        time_option: timeOption ? parseInt(timeOption, 10) : null,
+        serving_option: serving ? parseInt(serving, 10) : null,
+        user_id: userName,
       });
-      setRecipe(res.data.response);
+
+      const rawPayload = res?.data?.response ?? res?.data ?? '';
+
+      // Always store a string for reliability
+      const rawString = typeof rawPayload === 'string'
+        ? rawPayload
+        : JSON.stringify(rawPayload);
+
+      // Make it available if user refreshes the /recipe page
+      sessionStorage.setItem('kyool:lastRecipe', rawString);
+
+      // Navigate to the pretty recipe page; pass the raw content via state too
+      navigate('/recipe', { state: { raw: rawString } });
     } catch (err) {
-      setError('Something went wrong!');
+      console.error(err);
+      setError('Something went wrong! Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-xl mx-auto p-4" style={{marginLeft: '20px'}}>
-      
-      <form onSubmit={handleSubmit} className="mb-4">
-        {/* Food Input */}
+    <div className="max-w-xl mx-auto p-4" style={{ marginLeft: '20px' }}>
+      <form onSubmit={handleSubmit} className="mb-4 kyool-form">
         <input
           type="text"
           value={foodInput}
           onChange={(e) => setFoodInput(e.target.value)}
-          placeholder="Enter food (e.g., eggs and spinach)"
+          placeholder="Enter ingredients (e.g., eggs, spinach)"
           className="ingredients-input"
         />
-
-         {/* Generate Button */}
-        <button style={{ marginLeft: '10px', borderRadius: '10px', cursor: 'pointer' }}
+        <button
+          style={{ marginLeft: '10px', borderRadius: '10px', cursor: 'pointer' }}
           type="submit"
           className="generate-btn"
+          disabled={loading}
         >
           {loading ? 'Loading...' : 'Generate'}
         </button>
-        
       </form>
-        {/* Oven Option Dropdown 
-        <select style={{ marginTop: '10px', cursor: 'pointer' }}
-          value={ovenOption}
-          onChange={(e) => setOvenOption(e.target.value)}
-          className="w-full p-2 border rounded"
-        >
-          <option value="with">With Oven</option>
-          <option value="without">Without Oven</option>
-        </select>*/}
 
-      {/* Oven Option Toggle */}
-      <div style={{ display: 'flex', alignItems: 'center', margin: '10px 10px' }}>
+      <div className="controls-row">
         <span>Oven</span>
         <button
           type="button"
-          className={`toggle-btn ${toggled ? "toggled" : ""}`}
+          className={`toggle-btn ${toggled ? 'toggled' : ''}`}
           onClick={() => setToggled(!toggled)}
           style={{ marginLeft: '20px', marginRight: '10px' }}
-          >
+          aria-pressed={toggled}
+        >
           <div className="thumb"></div>
         </button>
-        <span>{toggled ? "On" : "Off"}</span>
+        <span>{toggled ? 'On' : 'Off'}</span>
 
-
-          {/* Time Option Input */}
-        <select style={{ marginLeft: '40px',cursor: 'pointer' }}
+        <select
+          style={{ marginLeft: '40px', cursor: 'pointer' }}
           value={timeOption}
           onChange={(e) => setTimeOption(e.target.value)}
-          //placeholder="Enter time in minutes (e.g., 10, 20, 30)"
           className="time-select"
         >
           <option value="5">5 minutes</option>
@@ -96,41 +113,21 @@ export default function FoodGPT({userName}) {
           <option value="60">1 hour</option>
         </select>
 
-
-         {/* Serving Input */}
-        <select style={{ marginLeft: '40px',cursor: 'pointer' }}
+        <select
+          style={{ marginLeft: '40px', cursor: 'pointer' }}
           value={serving}
           onChange={(e) => setServing(e.target.value)}
-          //placeholder="Enter time in minutes (e.g., 10, 20, 30)"
           className="serving-select"
         >
-          <option value="1">1 serving</option>
-          <option value="2">2 servings</option>
-          <option value="3">3 servings</option>
-          <option value="4">4 servings</option>
-          <option value="5">5 servings</option>
-          <option value="6">6 servings</option>
-          <option value="7">7 servings</option>
-          <option value="8">8 servings</option>
-          <option value="9">9 servings</option>
-          <option value="10">10 servings</option>
+          {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
+            <option key={n} value={n}>
+              {n} {n === 1 ? 'serving' : 'servings'}
+            </option>
+          ))}
         </select>
       </div>
 
-        
-      
-        
-
-        
-
-      {error && <p className="text-red-500">{error}</p>}
-      {recipe && (
-        <div className="bg-gray-100 p-4 rounded whitespace-pre-wrap">
-          {recipe}
-        </div>
-      )}
-
+      {error && <p className="text-red-500" style={{ marginTop: 12 }}>{error}</p>}
     </div>
   );
 }
-
