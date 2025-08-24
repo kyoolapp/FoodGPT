@@ -41,3 +41,139 @@
   color: #646464;
   margin-bottom: 20px;
 }
+:root{
+  --grad-start:#8a36d1;
+  --grad-mid:#6b47ff;
+  --grad-end:#4e60ff;
+  --ink:#0f0f11;
+  --muted:#6b7280;
+  --surface:#ffffff;
+  --surface-2:#f6f7fb;
+  --ring:#e5e7eb;
+  --shadow: 0 18px 40px rgba(0,0,0,.10);
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --focus: 0 0 0 3px rgba(99,102,241,.35);
+}
+
+*{box-sizing:border-box}
+html,body,#root{height:100%}
+body{margin:0; background:var(--surface-2); color:var(--ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;}
+
+/* ---------- HERO ---------- */
+.login-root{min-height:100dvh; display:flex; flex-direction:column;}
+
+.login-hero{
+  position:relative;
+  background:
+    radial-gradient(1200px 500px at 15% 0%, rgba(255,255,255,.18), transparent 60%),
+    linear-gradient(120deg, var(--grad-start) 0%, var(--grad-mid) 45%, var(--grad-end) 100%);
+  color:#fff;
+  padding: 22px 0 70px;      /* give space for wave + avoid card collision */
+  border-bottom-left-radius: 32px;
+  border-bottom-right-radius: 32px;
+}
+.login-hero-inner{
+  max-width: 1200px; margin: 0 auto; padding: 0 20px;
+}
+.login-brand{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.2px;}
+.login-logo-dot{width:12px; height:12px; border-radius:999px; background:#fff; box-shadow:0 0 0 4px rgba(255,255,255,.25);}
+.login-hero-content{ text-align:center; margin-top: 22px; }
+.login-tagline{margin:0 0 6px; opacity:.95; font-weight:500;}
+.login-hero-title{margin:0; font-size: clamp(28px, 4vw, 40px); font-weight:800;}
+.login-hero-sub{margin:10px 0 0; opacity:.9; font-size:16px;}
+
+.login-hero-wave{
+  position:absolute; left:0; bottom:-2px; width:100%; height:110px; display:block; fill:#fff; opacity:.96;
+}
+
+/* ---------- CARD ---------- */
+.login-container{
+  display:flex; justify-content:center;
+  max-width: 1200px; margin: -64px auto 0; padding: 0 20px 48px;
+  position:relative; z-index:2;
+}
+.login-card{
+  width:100%; max-width: 520px;
+  background: #ffffff;
+  border: 1px solid var(--ring);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+.login-card-title{margin:0 0 4px; font-size:22px;}
+.login-card-sub{margin:0 0 16px; color:var(--muted);}
+
+/* ---------- BUTTONS ---------- */
+.btn-primary, .btn-google{
+  width:100%; border:0; cursor:pointer; padding:12px 14px; border-radius:12px; font-weight:700; transition:.15s ease;
+}
+.btn-primary{ background:#111; color:#fff; box-shadow:0 8px 18px rgba(0,0,0,.12);}
+.btn-primary:hover{ transform: translateY(-1px); }
+.btn-primary:disabled{opacity:.7; cursor:not-allowed;}
+.btn-primary:focus-visible{outline:none; box-shadow: var(--focus);}
+
+.btn-google{
+  background:#fff; color:#111; border:1px solid #e5e7eb;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+}
+.btn-google:hover{ background:#fafafa; transform: translateY(-1px); }
+.btn-google:focus-visible{ outline:none; box-shadow: var(--focus); }
+.g-icon{ width:20px; height:20px; display:inline-flex; }
+
+/* ---------- SEPARATOR ---------- */
+.login-sep{
+  position:relative; text-align:center; margin:14px 0 12px; color:var(--muted);
+}
+.login-sep::before, .login-sep::after{
+  content:""; position:absolute; top:50%; width:40%; height:1px; background:#e5e7eb;
+}
+.login-sep::before{left:0} .login-sep::after{right:0}
+.login-sep span{ background:#fff; padding:0 8px; position:relative; z-index:1; }
+
+/* ---------- FORM ---------- */
+.login-form{ display:flex; flex-direction:column; gap:12px; margin-top:8px; }
+.login-label{ font-size:13px; font-weight:600; display:flex; flex-direction:column; gap:6px; }
+.login-input{
+  padding:11px 12px; border-radius:12px; border:1px solid #d6dae3; background:#f8fafc;
+  font-size:15px; outline:none; color:#111;
+}
+.login-input:focus{ border-color:#6366f1; box-shadow: var(--focus); background:#fff; }
+
+/* Fix inconsistent blue autofill background on Chrome */
+.login-input:-webkit-autofill{
+  -webkit-box-shadow: 0 0 0 1000px #f8fafc inset;
+  -webkit-text-fill-color: #111 !important;
+  caret-color: #111;
+}
+
+/* ---------- ERROR ---------- */
+.login-error{
+  background:#fff5f5; border:1px solid #fecaca; color:#991b1b;
+  padding:10px 12px; border-radius:10px; margin-bottom:12px; font-size:14px;
+}
+
+/* ---------- FOOTER ---------- */
+.login-footer{ margin-top:auto; padding:18px; text-align:center; color:var(--muted);}
+.login-footer .sep{ margin:0 6px; }
+/* Remove the backdrop box behind the sign-in card */
+.login-container{
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.login-container::before,
+.login-container::after{
+  content: none !important;
+}
+/* Remove the backdrop box behind the sign-in card */
+.login-container{
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.login-container::before,
+.login-container::after{
+  content: none !important;
+}

@@ -82,3 +82,175 @@
     padding: 10px 10px;
     margin-left: 15px;
 }
+/* Container + header */
+.kyool-recipe {
+  width: 100%;
+  max-width: 1280px;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 24px rgba(0,0,0,0.04);
+  overflow: hidden;
+}
+
+.kyool-header {
+  height: 72px;
+  background: #FAF3E8;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+}
+
+.kyool-brand {
+  color: #111;
+  font: 400 20px/24px Roboto, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+}
+
+/* Top block */
+.kyool-top { padding: 24px; }
+.kyool-back {
+  color: #111;
+  text-decoration: none;
+  font: 400 16px/1.4 Roboto, sans-serif;
+}
+.kyool-title {
+  margin: 8px 0 6px;
+  font: 700 28px/1.2 Roboto, sans-serif;
+  color: #111;
+}
+.kyool-desc {
+  margin: 0 0 16px;
+  font: 400 16px/1.6 Roboto, sans-serif;
+  color: #222;
+}
+.kyool-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.chip {
+  background: #393939;
+  color: #fafafa;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font: 400 14px/1 Roboto, sans-serif;
+}
+
+/* Layout */
+.kyool-main {
+  display: grid;
+  grid-template-columns: 1fr 250px;
+  gap: 24px;
+  padding: 0 24px 24px;
+}
+@media (max-width: 980px) {
+  .kyool-main { grid-template-columns: 1fr; }
+}
+
+/* Left column */
+.kyool-left h2 {
+  font: 700 22px/1.2 Roboto, sans-serif;
+  margin: 18px 0 8px;
+  color: #111;
+}
+.kyool-ingredients {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  columns: 2;
+  column-gap: 24px;
+}
+@media (max-width: 720px) { .kyool-ingredients { columns: 1; } }
+.kyool-ingredients li {
+  break-inside: avoid;
+  padding-left: 10px;
+  position: relative;
+  margin: 6px 0;
+  font: 400 16px/1.7 Roboto, sans-serif;
+}
+.kyool-ingredients li::before {
+  content: '';
+  width: 6px; height: 6px;
+  border: 2px solid #FFCD29;
+  position: absolute; left: 0; top: 10px;
+}
+
+/* Steps */
+.kyool-steps {
+  list-style: none; padding: 0; margin: 8px 0 0;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.step-card {
+  display: flex; gap: 12px;
+  border: 1px solid #324158; border-radius: 10px;
+  padding: 14px 16px;
+  background: #fff;
+}
+.step-badge {
+  width: 28px; height: 28px; border-radius: 9999px;
+  background: #2C7FFF; color: #fff;
+  aspect-ratio: 1 / 1;   
+  display: flex; align-items: center; justify-content: center;
+  font: 600 16px/1 Roboto, sans-serif;
+}
+.step-body { display: flex; flex-direction: column; gap: 4px; }
+.step-text { font: 400 16px/1.6 Roboto, sans-serif; color: #111; }
+.step-time { font: 400 14px/1.4 Roboto, sans-serif; color: #333; }
+
+/* Right column — Nutrition */
+.kyool-right { padding-top: 20px; }
+.nutrition-card {
+  background: #FFD966;
+  border-radius: 10px;
+  padding: 10px;
+}
+.nutrition-title {
+  display: flex; align-items: center; gap: 8px;
+  font: 600 16px/1.2 Roboto, sans-serif; color: #000;
+}
+.nutrition-cal {
+  display: inline-block;
+  background: #FFEDB8;
+  border-radius: 5px;
+  padding: 4px 10px;
+  margin: px 0 8px;
+  font: 500 16px/1 Roboto, sans-serif;
+}
+.divider {
+  height: 1px; background: #1B1B1B; opacity: 0.6; margin: 12px 0;
+}
+.nutrition-grid { display: grid; grid-template-columns: 1fr auto; row-gap: 8px; }
+.nutrition-row { display: contents; }
+.nutrition-row > span { font: 400 16px/1.7 Roboto, sans-serif; }
+
+/* Controls row tidy-up */
+.controls-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 10px; }
+
+/* Optional: raw text block (debug) */
+.raw-recipe { background: #f7f7f7; padding: 12px; border-radius: 8px; white-space: pre-wrap; }
+
+
+/* ===== Recipe page layout (scoped) ===== */
+.recipe-page{ max-width:1200px; margin:0 auto; padding:24px 20px 64px; }
+.app-hero + .recipe-page{ margin-top:-8px; }
+
+.rp-top{ margin-bottom:10px; }
+.rp-back{ display:inline-block; margin-bottom:8px; color:#111; text-decoration:none; font-weight:600; }
+.rp-back:hover{ text-decoration:underline; }
+
+.rp-title{ margin:0 0 6px; font:800 36px/1.2 Inter, ui-sans, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:#111; }
+.rp-chips{ display:flex; gap:10px; flex-wrap:wrap; }
+.rp-chips .chip{ background:#393939; color:#fafafa; border-radius:6px; padding:4px 10px; font:400 14px/1 Inter, sans-serif; }
+
+.rp-grid{ display:grid; grid-template-columns:minmax(0,1fr) 380px; gap:24px; align-items:start; }
+@media (max-width:980px){ .rp-grid{ grid-template-columns:1fr; } }
+.rp-main{ grid-column:1/2; }
+.rp-aside{ grid-column:2/3; }
+
+/* keep steps tidy */
+.kyool-steps{ list-style:none; padding:0; margin:8px 0 0; display:flex; flex-direction:column; gap:12px; width:100%; }
+.step-card{ display:flex; gap:12px; border:1px solid #324158; border-radius:10px; padding:14px 16px; background:#fff; }
+.step-badge{ width:32px; height:32px; border-radius:9999px; background:#2C7FFF; color:#fff; display:grid; place-items:center; font:700 16px/1 Inter, sans-serif; font-variant-numeric:tabular-nums; }
+.step-text{ font:400 16px/1.6 Inter, sans-serif; color:#111; }
+.step-time{ font:400 14px/1.4 Inter, sans-serif; color:#333; }
