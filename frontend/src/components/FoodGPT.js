@@ -129,5 +129,5 @@ export default function FoodGPT({ userName }) {
 
       {error && <p className="text-red-500" style={{ marginTop: 12 }}>{error}</p>}
     </div>
-  );
+  );
 }

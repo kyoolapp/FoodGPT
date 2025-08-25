@@ -17,9 +17,9 @@ function extractRecipeTitle(resp) {
 
   let s = String(resp).trim();
 
-  // Strip ```json fences if present
-  if (s.startsWith('```')) {
-    s = s.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+  // Strip json fences if present
+  if (s.startsWith('')) {
+    s = s.replace(/^(?:json)?\s*/i, '').replace(/\s*$/i, '').trim();
   }
 
   // If the whole payload is a quoted JSON string, unquote once
@@ -184,5 +184,5 @@ export default function App() {
       />
       <Route path="/recipe" element={<RecipePage />} />
     </Routes>
-  );
+  );
 }
