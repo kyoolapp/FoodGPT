@@ -99,7 +99,9 @@ export default function RecipePage() {
               <div className="rp-progress-bar" style={{ width: `${completion}%` }} />
             </div>
             <span className="rp-progress-label">{completion}% complete</span>
+          
           </div>
+
         )}
 
         <svg
