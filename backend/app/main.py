@@ -48,7 +48,7 @@ async def generate_recipe(request: Request):
 
     prompt = (
         f"Suggest a healthy recipe using only the following ingredients: {ingredients}. {oven_text}, {serving_text} {time_text}.\n"
-        "Also include estimated calories and nutritional values.\n\n"
+        "Also include estimated calories and nutritional values in grams.(strictly numbers only, don't mention the unit).\n\n"
         "Return the answer strictly in this JSON format, no extra text:\n\n"
         "{\n"
         '  "recipe_name": "<recipe name>",\n'
@@ -64,7 +64,7 @@ async def generate_recipe(request: Request):
         "  }\n"
         "}\n"
     ) 
-    print("DEBUG prompt:", prompt)
+    #print("\n\nDEBUG prompt:", prompt)
     async with httpx.AsyncClient(timeout=240) as client: 
         response = await client.post( 
        f"http://localhost:11434/api/generate", 
@@ -78,6 +78,7 @@ async def generate_recipe(request: Request):
 
     result = response.json() 
     recipe_response = result.get("response", "No response received from LLaMA.")
+    #print("\n\nDEBUG llama response:", recipe_response)
 
 
     try:
@@ -87,7 +88,7 @@ async def generate_recipe(request: Request):
         recipe_data = {"raw_response": recipe_response}
 
 
-    print("DEBUG recipe_data:", recipe_data)
+    #print("\n\nDEBUG recipe_data:", recipe_data)
 
 
     entry = {
