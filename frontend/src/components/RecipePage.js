@@ -1,11 +1,53 @@
 // src/components/RecipePage.jsx
-import React from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./RecipePage.css";
 
 export default function RecipePage() {
   const { state } = useLocation();
   const recipe = state?.recipe || null;  // unified prop from history or FoodGPT
+
+  // ===== NEW: step completion state (per recipe) =====
+  const recipeKey = useMemo(() => {
+    const title = recipe?.recipe_name || "Recipe";
+    return `kyool:doneSteps:${title}`;
+  }, [recipe]);
+
+  const [doneSteps, setDoneSteps] = useState(() => {
+    try {
+      const raw = sessionStorage.getItem(recipeKey);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(recipeKey, JSON.stringify(doneSteps));
+    } catch {}
+  }, [doneSteps, recipeKey]);
+
+  const toggleStep = (n) => {
+    setDoneSteps((prev) => (prev.includes(n) ? prev.filter((x) => x !== n) : [...prev, n]));
+  };
+
+  // celebration burst when reaching 100%
+  const [burst, setBurst] = useState(false);
+  const prevCompletion = useRef(0);
+
+  // ===== NEW: compute completion =====
+  const totalSteps = recipe?.instructions?.length || 0;
+  const completion = totalSteps ? Math.round((doneSteps.length / totalSteps) * 100) : 0;
+
+  useEffect(() => {
+    if (prevCompletion.current < 100 && completion === 100) {
+      setBurst(true);
+      const t = setTimeout(() => setBurst(false), 1200);
+      return () => clearTimeout(t);
+    }
+    prevCompletion.current = completion;
+  }, [completion]);
 
   if (!recipe) {
     return (
@@ -43,6 +85,23 @@ export default function RecipePage() {
             </div>
           )}
         </div>
+
+        {/* ===== NEW: progress bar in hero when steps exist ===== */}
+        {totalSteps > 0 && (
+          <div
+            className="rp-progress"
+            role="progressbar"
+            aria-valuenow={completion}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          >
+            <div className="rp-progress-track">
+              <div className="rp-progress-bar" style={{ width: `${completion}%` }} />
+            </div>
+            <span className="rp-progress-label">{completion}% complete</span>
+          </div>
+        )}
+
         <svg
           className="rp-wave"
           viewBox="0 0 1440 120"
@@ -54,7 +113,7 @@ export default function RecipePage() {
       </header>
 
       <main className="rp-main">
-        <section className="rp-card">
+        <section className="rp-card rp-card--ing">
           <h2 className="rp-h2">Ingredients</h2>
           <ul className="rp-ingredients">
             {ingredients.length ? (
@@ -66,15 +125,15 @@ export default function RecipePage() {
 
           {Object.keys(nutritional_values).length > 0 && (
             <div className="rp-nutrition">
-              <div className="rp-nutrition-title">Nutrition Facts
-
+              <div className="rp-nutrition-title">
+                Nutrition Facts
                 <div className="rp-nut-foot">
-                {serving > 0
-                  ? `Per serving • ${serving} total ${serving === 1 ? "serving" : "servings"}`
-                  : ""}
+                  {serving > 0
+                    ? `Per serving • ${serving} total ${serving === 1 ? "serving" : "servings"}`
+                    : ""}
+                </div>
               </div>
-              </div>
-                            
+
               {estimated_calories && (
                 <div className="rp-cal-chip">
                   Calories {estimated_calories}
@@ -85,28 +144,56 @@ export default function RecipePage() {
                 {Object.entries(nutritional_values).map(([key, val]) => (
                   <div key={key} className="rp-nrow">
                     <span>{key}</span>
-                    <span>{val} g</span>
+                    <span>{`${val} g`}</span>
                   </div>
                 ))}
               </div>
-              
-              
             </div>
           )}
         </section>
 
         <section className="rp-card">
           <h2 className="rp-h2">Instructions</h2>
+          <p>✔️Mark every step as done</p>
           <ol className="rp-steps">
             {instructions.length ? (
-              instructions.map((step, i) => (
-                <li key={i} className="rp-step">
-                  <div className="rp-badge">{i + 1}</div>
-                  <div className="rp-step-body">
-                    <div className="rp-step-text">{step}</div>
-                  </div>
-                </li>
-              ))
+              instructions.map((step, i) => {
+                const n = i + 1;
+                const done = doneSteps.includes(n);
+                return (
+                  <li
+                    key={i}
+                    className={`rp-step ${done ? "rp-step-done" : ""}`}
+                    onClick={() => toggleStep(n)}
+                    role="button"
+                    aria-pressed={done}
+                    tabIndex={0}
+                    onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && toggleStep(n)}
+                  >
+                    <div className={`rp-badge ${done ? "done" : ""}`}>
+                      {done ? "✔" : n}
+                    </div>
+
+                    <div className="rp-step-body">
+                      <div className="rp-step-text">{step}</div>
+                    </div>
+
+                    {/* === NEW: explicit toggle button per step === */}
+                    <button
+                      type="button"
+                      className={`rp-step-toggle ${done ? "is-done" : ""}`}
+                      onClick={(e) => {
+                        e.stopPropagation(); // don't trigger li's onClick
+                        toggleStep(n);
+                      }}
+                      aria-pressed={done}
+                      aria-label={done ? `Mark step ${n} as not done` : `Mark step ${n} as done`}
+                    >
+                      {done ? "Undo" : "Done"}
+                    </button>
+                  </li>
+                );
+              })
             ) : (
               <li className="rp-step">
                 <div className="rp-badge">—</div>
@@ -118,6 +205,13 @@ export default function RecipePage() {
           </ol>
         </section>
       </main>
+
+      {/* ===== NEW: tiny confetti burst ===== */}
+      {burst && (
+        <div className="rp-burst" aria-hidden="true">
+          {Array.from({ length: 16 }).map((_, i) => <span key={i}>🎉</span>)}
+        </div>
+      )}
     </div>
   );
 }

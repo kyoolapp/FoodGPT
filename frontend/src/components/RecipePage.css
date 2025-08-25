@@ -156,3 +156,95 @@
 
 /* (Optional) ensure there's breathing room below the page */
 .rp-root { padding-bottom: 64px; }
+/* === Progress bar (hero) === */
+.rp-progress { margin: 10px 20px 0; display: flex; align-items: center; gap: 10px; }
+.rp-progress-track { flex: 1; height: 8px; background: #eee; border-radius: 6px; overflow: hidden; }
+.rp-progress-bar { height: 100%; background: #22c55e; border-radius: 6px; transition: width 0.3s ease; }
+.rp-progress-label { font-size: 12px; color: #fff; opacity: .95; }
+
+/* === Step completion interactions === */
+.rp-step { cursor: pointer; }
+.rp-badge { transition: transform .15s ease, background .2s ease, color .2s ease; }
+.rp-badge.done { background: #22c55e !important; color: #fff !important; transform: scale(1.05); }
+/* === Step completion style (instead of strikethrough) === */
+.rp-step-done .rp-step-text {
+  color: #374151;            /* darker gray */
+  font-style: italic;        /* gentle cue */
+  background: rgba(34, 197, 94, 0.12); /* soft green highlight */
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+/* === Confetti burst === */
+.rp-burst {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  animation: rpFade 1.2s ease both;
+  z-index: 50;
+}
+.rp-burst span {
+  position: absolute;
+  font-size: 22px;
+  animation: rpPop 1s ease forwards;
+}
+@keyframes rpFade { from { opacity: 1; } to { opacity: 0; } }
+@keyframes rpPop {
+  0% { transform: translate(0, 0) scale(0.9); }
+  60% { transform: translate(var(--dx, 0), var(--dy, -80px)) scale(1.1); }
+  100% { transform: translate(var(--dx, 0), var(--dy, -120px)) scale(0.9); }
+}
+/* sprinkle randomized offsets */
+.rp-burst span:nth-child(1)  { --dx: -140px; --dy: -60px; }
+.rp-burst span:nth-child(2)  { --dx: -100px; --dy: -90px; }
+.rp-burst span:nth-child(3)  { --dx: -60px;  --dy: -70px; }
+.rp-burst span:nth-child(4)  { --dx: -20px;  --dy: -110px; }
+.rp-burst span:nth-child(5)  { --dx: 0px;    --dy: -130px; }
+.rp-burst span:nth-child(6)  { --dx: 20px;   --dy: -115px; }
+.rp-burst span:nth-child(7)  { --dx: 60px;   --dy: -85px; }
+.rp-burst span:nth-child(8)  { --dx: 100px;  --dy: -60px; }
+.rp-burst span:nth-child(9)  { --dx: -120px; --dy: -120px; }
+.rp-burst span:nth-child(10) { --dx: -80px;  --dy: -140px; }
+.rp-burst span:nth-child(11) { --dx: -40px;  --dy: -100px; }
+.rp-burst span:nth-child(12) { --dx: 40px;   --dy: -100px; }
+.rp-burst span:nth-child(13) { --dx: 80px;   --dy: -140px; }
+.rp-burst span:nth-child(14) { --dx: 120px;  --dy: -120px; }
+.rp-burst span:nth-child(15) { --dx: 0;      --dy: -160px; }
+.rp-burst span:nth-child(16) { --dx: 140px;  --dy: -90px; }
+  /* === Step toggle button === */
+.rp-step {
+  position: relative;
+}
+
+.rp-step-toggle {
+  margin-left: auto;               /* push to the right */
+  align-self: center;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #cfd7e4;
+  background: #f8fafc;
+  font: 700 12px/1 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+}
+
+.rp-step-toggle:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(32,62,122,.12);
+  border-color: #b8c6dd;
+  background: #ffffff;
+}
+
+.rp-step-toggle.is-done {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(34,197,94,.25);
+}
+
+.rp-step-toggle.is-done:hover {
+  filter: brightness(1.02);
+}
