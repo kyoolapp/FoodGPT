@@ -16,8 +16,8 @@ export default function FoodGPT({ userName }) {
   const navigate = useNavigate();
 
   const [foodInput, setFoodInput] = useState('');
-  const [timeOption, setTimeOption] = useState('10');
-  const [serving, setServing] = useState('1');
+  const [timeOption, setTimeOption] = useState('');   // ⟵ was '10'
+  const [serving, setServing] = useState('');         // ⟵ was '1'
   const [toggled, setToggled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -37,8 +37,8 @@ export default function FoodGPT({ userName }) {
       const res = await axios.post('https://api.kyoolapp.com/generate-recipe/', {
         ingredients,
         oven_option: toggled ? 'with' : 'without',
-        time_option: timeOption ? parseInt(timeOption, 10) : null,
-        serving_option: serving ? parseInt(serving, 10) : 1,
+        time_option: timeOption ? parseInt(timeOption, 10) : null,  // empty = null
+        serving_option: serving ? parseInt(serving, 10) : null,     // empty = null
         user_id: userName,
       });
 
@@ -75,56 +75,62 @@ export default function FoodGPT({ userName }) {
       </form>
 
       <div className="controls-row">
-{/* Oven label */}
-<span>Oven</span>
+        {/* Oven label */}
+        <span>Oven</span>
 
-{/* UNIQUE: Rotating oven knob (replaces old toggle button) */}
-<div
-  role="switch"
-  aria-checked={toggled}
-  tabIndex={0}
-  className={`oven-knob ${toggled ? 'on' : 'off'}`}
-  onClick={() => setToggled(!toggled)}
-  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setToggled(!toggled)}
-  style={{ marginLeft: '20px', marginRight: '10px' }}
->
-  <div className="knob-face">
-    <div className="knob-pointer" />
-    <div className="knob-center">
-      <div className="flame" />
-    </div>
-  </div>
-  {/* decorative arc ticks */}
-  <div className="knob-arc">
-    <span className="tick t0" />
-    <span className="tick t1" />
-    <span className="tick t2" />
-    <span className="tick t3" />
-    <span className="tick t4" />
-  </div>
-</div>
+        {/* Rotating oven knob */}
+        <div
+          role="switch"
+          aria-checked={toggled}
+          tabIndex={0}
+          className={`oven-knob ${toggled ? 'on' : 'off'}`}
+          onClick={() => setToggled(!toggled)}
+          onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setToggled(!toggled)}
+          style={{ marginLeft: '20px', marginRight: '10px' }}
+        >
+          <div className="knob-face">
+            <div className="knob-pointer" />
+            <div className="knob-center">
+              <div className="flame" />
+            </div>
+          </div>
+          <div className="knob-arc">
+            <span className="tick t0" />
+            <span className="tick t1" />
+            <span className="tick t2" />
+            <span className="tick t3" />
+            <span className="tick t4" />
+          </div>
+        </div>
 
-{/* On/Off text */}
-<span>{toggled ? 'On' : 'Off'}</span>
+        {/* On/Off text */}
+        <span>{toggled ? 'On' : 'Off'}</span>
 
-
+        {/* Time select */}
         <select
+          aria-label="Select time"
           style={{ marginLeft: '40px', cursor: 'pointer' }}
           value={timeOption}
           onChange={(e) => setTimeOption(e.target.value)}
           className="time-select"
         >
+          <option value="" disabled>⏰Select time</option>
           {['5','10','15','20','25','30','40','50','60'].map(val => (
-            <option key={val} value={val}>{val} {val==='60'?'1 hour':'minutes'}</option>
+            <option key={val} value={val}>
+              {val} {val === '60' ? '1 hour' : 'minutes'}
+            </option>
           ))}
         </select>
 
+        {/* Serving select */}
         <select
+          aria-label="Select servings"
           style={{ marginLeft: '40px', cursor: 'pointer' }}
           value={serving}
           onChange={(e) => setServing(e.target.value)}
           className="serving-select"
         >
+          <option value="" disabled>🥣Select servings</option>
           {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
             <option key={n} value={n}>
               {n} {n === 1 ? 'serving' : 'servings'}
