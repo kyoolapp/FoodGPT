@@ -164,8 +164,14 @@
 
 /* === Step completion interactions === */
 .rp-step { cursor: pointer; }
-.rp-badge { transition: transform .15s ease, background .2s ease, color .2s ease; }
-.rp-badge.done { background: #22c55e !important; color: #fff !important; transform: scale(1.05); }
+.rp-badge{
+  width:34px; height:34px; border-radius:999px;
+  display:grid; place-items:center; font-weight:800; font-size:16px;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(135deg, #a855f7, #6366f1); /* purple gradient */
+  color:#fff;
+  box-shadow: 0 6px 16px rgba(99,102,241,.35);
+}.rp-badge.done { background: #22c55e !important; color: #fff !important; transform: scale(1.05); }
 /* === Step completion style (instead of strikethrough) === */
 .rp-step-done .rp-step-text {
   color: #374151;            /* darker gray */

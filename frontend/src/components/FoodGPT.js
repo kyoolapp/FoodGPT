@@ -75,17 +75,38 @@ export default function FoodGPT({ userName }) {
       </form>
 
       <div className="controls-row">
-        <span>Oven</span>
-        <button
-          type="button"
-          className={`toggle-btn ${toggled ? 'toggled' : ''}`}
-          onClick={() => setToggled(!toggled)}
-          style={{ marginLeft: '20px', marginRight: '10px' }}
-          aria-pressed={toggled}
-        >
-          <div className="thumb"></div>
-        </button>
-        <span>{toggled ? 'On' : 'Off'}</span>
+{/* Oven label */}
+<span>Oven</span>
+
+{/* UNIQUE: Rotating oven knob (replaces old toggle button) */}
+<div
+  role="switch"
+  aria-checked={toggled}
+  tabIndex={0}
+  className={`oven-knob ${toggled ? 'on' : 'off'}`}
+  onClick={() => setToggled(!toggled)}
+  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setToggled(!toggled)}
+  style={{ marginLeft: '20px', marginRight: '10px' }}
+>
+  <div className="knob-face">
+    <div className="knob-pointer" />
+    <div className="knob-center">
+      <div className="flame" />
+    </div>
+  </div>
+  {/* decorative arc ticks */}
+  <div className="knob-arc">
+    <span className="tick t0" />
+    <span className="tick t1" />
+    <span className="tick t2" />
+    <span className="tick t3" />
+    <span className="tick t4" />
+  </div>
+</div>
+
+{/* On/Off text */}
+<span>{toggled ? 'On' : 'Off'}</span>
+
 
         <select
           style={{ marginLeft: '40px', cursor: 'pointer' }}

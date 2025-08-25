@@ -1,40 +1,30 @@
 .toggle-btn {
-    background-color: #000000;
-    border: 1px solid #000000;
-    border-radius: 99px;
-    width: 45px;
-    height: 25px;
-    transition: background-color 0.1s ease, border-color 0.2s ease;
-    cursor: pointer;
-    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.748);
-    position: relative;
+  width: 55px; height: 30px;
+  border-radius: 99px;
+  border: none;
+  position: relative;
+  background: #2d2d2d;
+  cursor: pointer;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.6);
+  transition: background 0.3s ease;
 }
-
 .toggle-btn .thumb {
-    height: 15px;
-    width: 15px;
-    background-color: rgb(255, 255, 255);
-    border-radius: 99px;
-    transform: translateX(0);
-    transition: left 0.15s ease;
-    position: absolute;
-    left: 5px;
-    top: 50%;
-    transform: translateY(-50%);
+  width: 24px; height: 24px;
+  background: radial-gradient(circle, #ff9f1c, #ff3c00);
+  border-radius: 50%;
+  position: absolute;
+  top: 50%; left: 4px;
+  transform: translateY(-50%);
+  box-shadow: 0 0 8px rgba(255,60,0,0.7);
+  transition: left 0.3s ease, background 0.3s ease;
 }
-
 .toggle-btn.toggled {
-    background-color: #ffffff;
-    border: 1px solid #000000;
+  background: #222;
 }
-
-.toggle-btn:hover {
-    border-color: #999;
-}
-
 .toggle-btn.toggled .thumb {
-    left: calc(50px - 25.5px);
-    background-color: #000000;
+  left: calc(100% - 28px);
+  background: radial-gradient(circle, #22c55e, #15803d);
+  box-shadow: 0 0 10px rgba(34,197,94,0.8);
 }
 
 .generate-btn {
@@ -251,6 +241,135 @@
 /* keep steps tidy */
 .kyool-steps{ list-style:none; padding:0; margin:8px 0 0; display:flex; flex-direction:column; gap:12px; width:100%; }
 .step-card{ display:flex; gap:12px; border:1px solid #324158; border-radius:10px; padding:14px 16px; background:#fff; }
-.step-badge{ width:32px; height:32px; border-radius:9999px; background:#2C7FFF; color:#fff; display:grid; place-items:center; font:700 16px/1 Inter, sans-serif; font-variant-numeric:tabular-nums; }
+/* Step number badges */
+.step-badge, 
+.rp-badge {
+  width: 32px;          /* same width */
+  height: 32px;         /* same height */
+  min-width: 32px;      /* stop shrinking */
+  min-height: 32px;     
+  border-radius: 50%;   /* always circular */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1;       /* avoid stretching */
+  font-variant-numeric: tabular-nums; /* keeps 1-digit & 2-digit same spacing */
+  background: linear-gradient(135deg, #a855f7, #6366f1); /* purple gradient */
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.35);    
+}
 .step-text{ font:400 16px/1.6 Inter, sans-serif; color:#111; }
 .step-time{ font:400 14px/1.4 Inter, sans-serif; color:#333; }
+/* ===== Oven Knob (unique control) ===== */
+.oven-knob {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  cursor: pointer;
+  outline: none;
+  display: inline-block;
+  user-select: none;
+  /* subtle body with your preferred dark → warm gradient vibe */
+  background: radial-gradient(120% 120% at 30% 30%, #1b1b1b 0%, #0f0f10 70%);
+  box-shadow:
+    inset 0 2px 10px rgba(255, 255, 255, 0.06),
+    inset 0 -10px 20px rgba(0,0,0,0.5),
+    0 8px 18px rgba(0,0,0,0.25);
+  border: 1px solid #131316;
+  transition: box-shadow .25s ease, transform .1s ease;
+}
+.oven-knob:active { transform: scale(0.98); }
+.oven-knob:focus-visible { box-shadow: 0 0 0 3px rgba(255,153,0,.35), 0 8px 18px rgba(0,0,0,0.25); }
+
+/* face that rotates */
+.knob-face {
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: radial-gradient(140% 140% at 30% 30%, #2a2a2e 0%, #1b1c22 70%);
+  box-shadow:
+    inset 0 2px 6px rgba(255,255,255,0.06),
+    inset 0 -6px 12px rgba(0,0,0,0.45);
+  transition: transform .35s cubic-bezier(.2,.8,.2,1);
+}
+
+/* pointer “notch” (like a real dial) */
+.knob-pointer {
+  position: absolute;
+  top: 7px; /* distance from top rim */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px; height: 16px;
+  border-radius: 3px;
+  background: linear-gradient(#ffb347, #ff5b00);
+  box-shadow: 0 0 6px rgba(255, 107, 0, .6);
+  transition: background .25s ease, box-shadow .25s ease;
+}
+
+/* center badge with animated flame dot */
+.knob-center {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 18px; height: 18px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffb347, #ff6a00 60%, #a53300 100%);
+  box-shadow: 0 0 10px rgba(255,120,0,.55);
+}
+.knob-center .flame {
+  position: absolute; inset: 4px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, rgba(255,238,200,.95), rgba(255,170,0,.85) 60%, rgba(255,120,0,.8) 100%);
+  filter: blur(0.3px);
+  animation: flame-idle 1.6s ease-in-out infinite;
+}
+@keyframes flame-idle {
+  0% { transform: scale(0.98); opacity: .9; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(0.98); opacity: .9; }
+}
+
+/* tick marks around the rim */
+.knob-arc { position: absolute; inset: 0; pointer-events: none; }
+.knob-arc .tick {
+  position: absolute;
+  width: 2px; height: 8px;
+  background: #3a3a40;
+  border-radius: 1px;
+  left: 50%; top: 2px;
+  transform-origin: 50% 26px; /* radius from center */
+  opacity: .8;
+}
+.knob-arc .t0 { transform: translateX(-50%) rotate(-60deg); }
+.knob-arc .t1 { transform: translateX(-50%) rotate(-30deg); }
+.knob-arc .t2 { transform: translateX(-50%) rotate(0deg); }
+.knob-arc .t3 { transform: translateX(-50%) rotate(30deg); }
+.knob-arc .t4 { transform: translateX(-50%) rotate(60deg); }
+
+/* OFF state = pointer at low, warm glow */
+.oven-knob.off .knob-face { transform: rotate(-60deg); }
+.oven-knob.off .knob-center {
+  background: radial-gradient(circle at 35% 35%, #ffb347, #ff6a00 60%, #a53300 100%);
+}
+
+/* ON state = pointer rotates to “heat” and the center glows green */
+.oven-knob.on .knob-face { transform: rotate(75deg); }
+.oven-knob.on .knob-pointer {
+  background: linear-gradient(#4ade80, #16a34a);
+  box-shadow: 0 0 8px rgba(34,197,94,.6);
+}
+.oven-knob.on .knob-center {
+  background: radial-gradient(circle at 35% 35%, #b6ffc9, #22c55e 65%, #117a38 100%);
+  box-shadow: 0 0 12px rgba(34,197,94,.55);
+}
+.oven-knob.on .knob-center .flame {
+  background: radial-gradient(circle at 40% 40%, rgba(235,255,240,.95), rgba(120,255,170,.9) 60%, rgba(34,197,94,.85) 100%);
+  animation: flame-on 1.1s ease-in-out infinite;
+}
+@keyframes flame-on {
+  0% { transform: scale(0.98); opacity: .95; filter: brightness(1); }
+  50% { transform: scale(1.08); opacity: 1; filter: brightness(1.1); }
+  100% { transform: scale(0.98); opacity: .95; filter: brightness(1); }
+}
