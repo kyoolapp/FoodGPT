@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './FoodGPT.css';
 
-/** Split input on commas only, trim, drop empties */
 function normalizeIngredients(input) {
   if (!input) return [];
   return String(input)
@@ -19,7 +18,7 @@ export default function FoodGPT({ userName }) {
   const [foodInput, setFoodInput] = useState('');
   const [timeOption, setTimeOption] = useState('10');
   const [serving, setServing] = useState('1');
-  const [toggled, setToggled] = useState(false);   // oven toggle
+  const [toggled, setToggled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -39,22 +38,14 @@ export default function FoodGPT({ userName }) {
         ingredients,
         oven_option: toggled ? 'with' : 'without',
         time_option: timeOption ? parseInt(timeOption, 10) : null,
-        serving_option: serving ? parseInt(serving, 10) : null,
+        serving_option: serving ? parseInt(serving, 10) : 1,
         user_id: userName,
       });
 
-      const rawPayload = res?.data?.response ?? res?.data ?? '';
+      const recipeData = res?.data?.response;
+      sessionStorage.setItem('kyool:lastRecipe', JSON.stringify(recipeData));
+      navigate('/recipe', { state: { recipe: recipeData } });
 
-      // Always store a string for reliability
-      const rawString = typeof rawPayload === 'string'
-        ? rawPayload
-        : JSON.stringify(rawPayload);
-
-      // Make it available if user refreshes the /recipe page
-      sessionStorage.setItem('kyool:lastRecipe', rawString);
-
-      // Navigate to the pretty recipe page; pass the raw content via state too
-      navigate('/recipe', { state: { raw: rawString } });
     } catch (err) {
       console.error(err);
       setError('Something went wrong! Please try again.');
@@ -102,15 +93,9 @@ export default function FoodGPT({ userName }) {
           onChange={(e) => setTimeOption(e.target.value)}
           className="time-select"
         >
-          <option value="5">5 minutes</option>
-          <option value="10">10 minutes</option>
-          <option value="15">15 minutes</option>
-          <option value="20">20 minutes</option>
-          <option value="25">25 minutes</option>
-          <option value="30">30 minutes</option>
-          <option value="40">40 minutes</option>
-          <option value="50">50 minutes</option>
-          <option value="60">1 hour</option>
+          {['5','10','15','20','25','30','40','50','60'].map(val => (
+            <option key={val} value={val}>{val} {val==='60'?'1 hour':'minutes'}</option>
+          ))}
         </select>
 
         <select
@@ -129,5 +114,5 @@ export default function FoodGPT({ userName }) {
 
       {error && <p className="text-red-500" style={{ marginTop: 12 }}>{error}</p>}
     </div>
-  );
+  );
 }
