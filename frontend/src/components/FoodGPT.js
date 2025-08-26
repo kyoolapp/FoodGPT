@@ -1,4 +1,4 @@
-// src/components/FoodGPT.jsx
+// src/components/FoodGPT.js
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -12,7 +12,7 @@ function normalizeIngredients(input) {
     .filter(Boolean);
 }
 
-// Local suggestion list (swap for API later if you want)
+// Local suggestion list (swap to API-backed if you prefer)
 const INGREDIENTS = [
   // Proteins
   'eggs','egg whites','chicken','salmon','tuna','shrimp','beef','pork','lamb',
@@ -69,8 +69,7 @@ const INGREDIENTS = [
   'cornstarch','arrowroot','gelatin','chocolate chips'
 ];
 
-
-export default function FoodGPT({ userName }) {
+export default function FoodGPT({ userName, onNewRecipe }) {
   const navigate = useNavigate();
 
   const [foodInput, setFoodInput] = useState('');
@@ -93,7 +92,7 @@ export default function FoodGPT({ userName }) {
     return parts[parts.length - 1].trim().toLowerCase();
   }, [foodInput]);
 
-  // filter suggestions (replace with API if needed)
+  // filter suggestions
   useEffect(() => {
     if (!currentToken) {
       setSuggestions([]);
@@ -144,10 +143,7 @@ export default function FoodGPT({ userName }) {
   useEffect(() => {
     const onDocClick = (e) => {
       if (!inputRef.current || !sugRef.current) return;
-      if (
-        !inputRef.current.contains(e.target) &&
-        !sugRef.current.contains(e.target)
-      ) {
+      if (!inputRef.current.contains(e.target) && !sugRef.current.contains(e.target)) {
         setOpenSug(false);
       }
     };
@@ -176,8 +172,19 @@ export default function FoodGPT({ userName }) {
       });
 
       const recipeData = res?.data?.response;
-      sessionStorage.setItem('kyool:lastRecipe', JSON.stringify(recipeData));
-      navigate('/recipe', { state: { recipe: recipeData } });
+
+      // Build a history-friendly object (optimistic)
+      const historyItem = {
+        id: recipeData?.id || `local-${Date.now()}`,
+        times: new Date().toLocaleString(),
+        ingredients,
+        ...recipeData,
+      };
+
+      if (onNewRecipe) onNewRecipe(historyItem);
+
+      sessionStorage.setItem('kyool:lastRecipe', JSON.stringify(historyItem));
+      navigate('/recipe', { state: { recipe: historyItem } });
     } catch (err) {
       console.error(err);
       setError('Something went wrong! Please try again.');
@@ -187,7 +194,7 @@ export default function FoodGPT({ userName }) {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-4" style={{ marginLeft: '20px' }}>
+    <div className="max-w-3xl mx-auto p-4" style={{ marginLeft: '20px' }}>
       <form onSubmit={handleSubmit} className="mb-4 kyool-form" style={{ position: 'relative' }}>
         <input
           ref={inputRef}
@@ -227,7 +234,7 @@ export default function FoodGPT({ userName }) {
                 aria-selected={i === activeIdx}
                 className={`typeahead-item ${i === activeIdx ? 'active' : ''}`}
                 onMouseDown={(e) => {
-                  e.preventDefault(); // before blur
+                  e.preventDefault();
                   acceptSuggestion(s);
                 }}
                 onMouseEnter={() => setActiveIdx(i)}
@@ -240,24 +247,22 @@ export default function FoodGPT({ userName }) {
       </form>
 
       <div className="controls-row">
-        {/* Oven toggle */}
-<span>Oven Usage</span>
+        {/* Simple oven toggle */}
+        <span>Oven Usage</span>
+        <button
+          type="button"
+          className={`toggle-btn ${toggled ? 'toggled' : ''}`}
+          onClick={() => setToggled(!toggled)}
+          role="switch"
+          aria-checked={toggled}
+          aria-label={`Oven ${toggled ? 'on' : 'off'}`}
+          style={{ marginLeft: '20px', marginRight: '10px' }}
+        >
+          <span className="thumb" />
+        </button>
+        <span>{toggled ? 'On' : 'Off'}</span>
 
-<button
-  type="button"
-  className={`toggle-btn ${toggled ? 'toggled' : ''}`}
-  onClick={() => setToggled(!toggled)}
-  role="switch"
-  aria-checked={toggled}
-  aria-label={`Oven ${toggled ? 'on' : 'off'}`}
-  style={{ marginLeft: '20px', marginRight: '10px' }}
->
-  <span className="thumb" />
-</button>
-
-<span>{toggled ? 'On' : 'Off'}</span>
-
-
+        {/* Time select */}
         <select
           aria-label="Select time"
           style={{ marginLeft: '40px', cursor: 'pointer' }}
@@ -273,6 +278,7 @@ export default function FoodGPT({ userName }) {
           ))}
         </select>
 
+        {/* Servings select */}
         <select
           aria-label="Select servings"
           style={{ marginLeft: '40px', cursor: 'pointer' }}

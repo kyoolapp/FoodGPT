@@ -1,7 +1,7 @@
 // App.js
 import './App.css';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import FoodGPT from './components/FoodGPT';
 import RecipePage from './components/RecipePage';
@@ -9,8 +9,9 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 import { auth } from './firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
+const MAX_HOME_RECIPES = 3;
 
-function HomeScreen({ displayName, history }) {
+function HomeScreen({ displayName, history, onAddHistory }) {
   return (
     <>
       <header className="app-hero">
@@ -42,43 +43,54 @@ function HomeScreen({ displayName, history }) {
             <p className="muted">Enter ingredients (e.g tofu,onion,spinach) choose oven, time and servings, then hit cook it.</p>
           </div>
           <div className="card-body">
-            <FoodGPT userName={displayName} />
+            {/* pass the callback down */}
+            <FoodGPT userName={displayName} onNewRecipe={onAddHistory} />
           </div>
         </section>
 
-        <aside className="card history-card">
-          <div className="card-head">
-            <h2>Recent Recipes</h2>
-            <p className="muted">Your last few creations, at a glance.</p>
-          </div>
 
-          {history.length === 0 ? (
-            <div className="empty">
-              <div className="empty-emoji">🍳</div>
-              <p>No recipes yet — generate your first one!</p>
-            </div>
-          ) : (
-            <ul className="history-list">
-              {history.map((item) => (
-                <li key={item.id} className="history-item">
-                  <div className="hist-row">
-                    {(item.ingredients || []).slice(0, 6).map((ing, i) => (
-                      <span key={i} className="chip">{ing}</span>
-                    ))}
-                  </div>
-                  <Link
-                    to="/recipe"
-                    state={{ recipe: item }}  // pass full object
-                    className="hist-title"
-                  >
-                    {item.recipe_name || 'Recipe'}
-                  </Link>
-                  <div className="hist-time">{item.times} </div>
-                </li>
+<aside className="card history-card">
+  <div className="card-head">
+    <h2>Recent Recipes</h2>
+    <p className="muted">Your last few creations, at a glance.</p>
+  </div>
+
+  {history.length === 0 ? (
+    <div className="empty">
+      <div className="empty-emoji">🍳</div>
+      <p>No recipes yet — generate your first one!</p>
+    </div>
+  ) : (
+    <>
+      <ul className="history-list">
+        {history.slice(0, MAX_HOME_RECIPES).map((item) => (
+          <li key={item.id} className="history-item">
+            <div className="hist-row">
+              {(item.ingredients || []).map((ing, i) => (
+                <span key={i} className="chip">{ing}</span>
               ))}
-            </ul>
-          )}
-        </aside>
+            </div>
+            <Link
+              to="/recipe"
+              state={{ recipe: item }}
+              className="hist-title"
+            >
+              {item.recipe_name || 'Recipe'}
+            </Link>
+            <div className="hist-time">{item.times}</div>
+          </li>
+        ))}
+      </ul>
+
+      {history.length > MAX_HOME_RECIPES && (
+        <div className="history-actions" style={{ marginTop: 12, textAlign: 'right' }}>
+          <Link to="/history" className="btn btn-ghost">View all →</Link>
+        </div>
+      )}
+    </>
+  )}
+</aside>
+
       </main>
 
       <footer className="footer">
@@ -115,6 +127,15 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
+  // Accept a freshly generated recipe and prepend it to the list
+  const handleAddHistory = useCallback((item) => {
+    setHistory((prev) => {
+      // avoid dupes by id if server later returns the same id
+      if (prev.some(x => x.id === item.id)) return prev;
+      return [item, ...prev];
+    });
+  }, []);
+
   if (loading) return <div className="page-loading">Loading…</div>;
   if (!user) return <Login onLogin={setUser} />;
   if (firstLogin) return <Signup onSignup={(u) => { setUser(u); setFirstLogin(false); }} />;
@@ -123,7 +144,10 @@ export default function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<HomeScreen displayName={displayName} history={history} />} />
+      <Route
+        path="/"
+        element={<HomeScreen displayName={displayName} history={history} onAddHistory={handleAddHistory} />}
+      />
       <Route path="/recipe" element={<RecipePage />} />
     </Routes>
   );
