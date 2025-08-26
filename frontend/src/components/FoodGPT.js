@@ -240,27 +240,23 @@ export default function FoodGPT({ userName }) {
       </form>
 
       <div className="controls-row">
-        <span>Oven Power</span>
-        <div
-          role="switch"
-          aria-checked={toggled}
-          tabIndex={0}
-          className={`oven-knob ${toggled ? 'on' : 'off'}`}
-          onClick={() => setToggled(!toggled)}
-          onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setToggled(!toggled)}
-          style={{ marginLeft: '20px', marginRight: '10px' }}
-        >
-          <div className="knob-face">
-            <div className="knob-pointer" />
-            <div className="knob-center"><div className="flame" /></div>
-          </div>
-          <div className="knob-arc">
-            <span className="tick t0" /><span className="tick t1" />
-            <span className="tick t2" /><span className="tick t3" />
-            <span className="tick t4" />
-          </div>
-        </div>
-        <span>{toggled ? 'On' : 'Off'}</span>
+        {/* Oven toggle */}
+<span>Oven Usage</span>
+
+<button
+  type="button"
+  className={`toggle-btn ${toggled ? 'toggled' : ''}`}
+  onClick={() => setToggled(!toggled)}
+  role="switch"
+  aria-checked={toggled}
+  aria-label={`Oven ${toggled ? 'on' : 'off'}`}
+  style={{ marginLeft: '20px', marginRight: '10px' }}
+>
+  <span className="thumb" />
+</button>
+
+<span>{toggled ? 'On' : 'Off'}</span>
+
 
         <select
           aria-label="Select time"
@@ -269,7 +265,7 @@ export default function FoodGPT({ userName }) {
           onChange={(e) => setTimeOption(e.target.value)}
           className="time-select"
         >
-          <option value="" disabled>⏰Select time</option>
+          <option value="" disabled>⏰ Cooking time</option>
           {['5','10','15','20','25','30','40','50','60'].map(val => (
             <option key={val} value={val}>
               {val} {val === '60' ? '1 hour' : 'minutes'}
@@ -284,7 +280,7 @@ export default function FoodGPT({ userName }) {
           onChange={(e) => setServing(e.target.value)}
           className="serving-select"
         >
-          <option value="" disabled>🥣Select servings</option>
+          <option value="" disabled>🥣 Servings</option>
           {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
             <option key={n} value={n}>
               {n} {n === 1 ? 'serving' : 'servings'}
