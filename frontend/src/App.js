@@ -66,7 +66,7 @@ function HomeScreen({ displayName, history, onAddHistory }) {
         {history.slice(0, MAX_HOME_RECIPES).map((item) => (
           <li key={item.id} className="history-item">
             <div className="hist-row">
-              {(item.ingredients || []).map((ing, i) => (
+              {(item.ingredients || []).slice(0,6).map((ing, i) => (
                 <span key={i} className="chip">{ing}</span>
               ))}
             </div>
