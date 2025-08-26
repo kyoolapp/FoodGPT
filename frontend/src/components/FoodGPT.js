@@ -187,7 +187,7 @@ export default function FoodGPT({ userName }) {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-4" style={{ marginLeft: '20px' }}>
+    <div className="max-w-xl mx-auto p-4" style={{ marginLeft: '20px' }}>
       <form onSubmit={handleSubmit} className="mb-4 kyool-form" style={{ position: 'relative' }}>
         <input
           ref={inputRef}

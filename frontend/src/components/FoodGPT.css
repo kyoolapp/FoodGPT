@@ -26,52 +26,65 @@
   background: radial-gradient(circle, #22c55e, #15803d);
   box-shadow: 0 0 10px rgba(34,197,94,0.8);
 }
+/* Better accessibility focus for the toggle */
+.toggle-btn:focus-visible {
+  outline: 2px solid #22c55e;
+  outline-offset: 2px;
+}
 
 .generate-btn {
-    background-color: #000000;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 10px 0;
-    cursor: pointer;
-    border-radius: 5px;
-    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.748);
-    transition: background-color 0.3s ease;
+  background-color: #000000;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 10px 0;
+  cursor: pointer;
+  border-radius: 5px;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.748);
+  transition: background-color 0.3s ease;
+}
+.generate-btn:hover {
+  background-color: #7c7c7c;
 }
 
-.generate-btn:hover {
-    background-color: #7c7c7c;
+/* === Make the textbox longer === */
+/* Turn the form into a row so the input can grow */
+.kyool-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative; /* keeps the typeahead menu anchored */
 }
+/* Grow the input to fill available space */
 .ingredients-input {
-    width: 60%;
-    padding: 15px 20px;
-    border: 1px solid #1b1b1b;
-    border-radius: 99px;
-    box-sizing: border-box;
+  flex: 1;
+  width: auto;       /* override old width */
+  max-width: none;   /* remove any caps */
+  padding: 15px 20px;
+  border: 1px solid #1b1b1b;
+  border-radius: 99px;
+  box-sizing: border-box;
 }
 
 .time-select {
-    
-    border: 2px solid #303030;
-    border-radius: 99px;
-    box-sizing: border-box;
-    padding: 10px 10px;
-    margin-left: 15px;
+  border: 2px solid #303030;
+  border-radius: 99px;
+  box-sizing: border-box;
+  padding: 10px 10px;
+  margin-left: 15px;
 }
-
-
 .serving-select {
-    
-    border: 2px solid #303030;
-    border-radius: 99px;
-    box-sizing: border-box;
-    padding: 10px 10px;
-    margin-left: 15px;
+  border: 2px solid #303030;
+  border-radius: 99px;
+  box-sizing: border-box;
+  padding: 10px 10px;
+  margin-left: 15px;
 }
+
 /* Container + header */
 .kyool-recipe {
   width: 100%;
@@ -82,7 +95,6 @@
   box-shadow: 0 2px 24px rgba(0,0,0,0.04);
   overflow: hidden;
 }
-
 .kyool-header {
   height: 72px;
   background: #FAF3E8;
@@ -91,7 +103,6 @@
   justify-content: center;
   padding: 16px;
 }
-
 .kyool-brand {
   color: #111;
   font: 400 20px/24px Roboto, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
@@ -220,7 +231,6 @@
 /* Optional: raw text block (debug) */
 .raw-recipe { background: #f7f7f7; padding: 12px; border-radius: 8px; white-space: pre-wrap; }
 
-
 /* ===== Recipe page layout (scoped) ===== */
 .recipe-page{ max-width:1200px; margin:0 auto; padding:24px 20px 64px; }
 .app-hero + .recipe-page{ margin-top:-8px; }
@@ -261,125 +271,14 @@
 }
 .step-text{ font:400 16px/1.6 Inter, sans-serif; color:#111; }
 .step-time{ font:400 14px/1.4 Inter, sans-serif; color:#333; }
-/* ===== Oven Knob (unique control) ===== */
-.oven-knob {
-  position: relative;
-  width: 40px;      /* was 56px */
-  height: 40px;     /* was 56px */
-  border-radius: 50%;
-  cursor: pointer;
-  outline: none;
-  display: inline-block;
-  user-select: none;
-  background: radial-gradient(120% 120% at 30% 30%, #1b1b1b 0%, #0f0f10 70%);
-  box-shadow:
-    inset 0 2px 8px rgba(255, 255, 255, 0.06),
-    inset 0 -6px 12px rgba(0,0,0,0.5),
-    0 4px 10px rgba(0,0,0,0.25);
-  border: 1px solid #131316;
-  transition: box-shadow .25s ease, transform .1s ease;
-}
-.oven-knob:active { transform: scale(0.96); }
 
-/* face that rotates */
-.knob-face {
-  position: absolute;
-  inset: 4px;       /* was 6px */
-  border-radius: 50%;
-  background: radial-gradient(140% 140% at 30% 30%, #2a2a2e 0%, #1b1c22 70%);
-  box-shadow:
-    inset 0 1px 4px rgba(255,255,255,0.06),
-    inset 0 -4px 8px rgba(0,0,0,0.45);
-  transition: transform .35s cubic-bezier(.2,.8,.2,1);
-}
-
-/* pointer notch */
-.knob-pointer {
-  position: absolute;
-  top: 4px;         /* adjusted */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px;       /* was 6px */
-  height: 12px;     /* was 16px */
-  border-radius: 2px;
-  background: linear-gradient(#ffb347, #ff5b00);
-  box-shadow: 0 0 4px rgba(255, 107, 0, .6);
-}
-
-/* center badge */
-.knob-center {
-  position: absolute;
-  inset: 50% auto auto 50%;
-  width: 12px;      /* was 18px */
-  height: 12px;     /* was 18px */
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ffb347, #ff6a00 60%, #a53300 100%);
-  box-shadow: 0 0 6px rgba(255,120,0,.55);
-}
-.knob-center .flame {
-  position: absolute;
-  inset: 3px;       /* adjusted */
-  border-radius: 50%;
-  background: radial-gradient(circle at 40% 40%, rgba(255,238,200,.95), rgba(255,170,0,.85) 60%, rgba(255,120,0,.8) 100%);
-  filter: blur(0.3px);
-  animation: flame-idle 1.6s ease-in-out infinite;
-}
-@keyframes flame-idle {
-  0% { transform: scale(0.98); opacity: .9; }
-  50% { transform: scale(1.05); opacity: 1; }
-  100% { transform: scale(0.98); opacity: .9; }
-}
-
-/* tick marks around the rim */
-.knob-arc { position: absolute; inset: 0; pointer-events: none; }
-.knob-arc .tick {
-  width: 2px;
-  height: 6px;      /* smaller */
-  background: #3a3a40;
-  border-radius: 1px;
-  left: 50%;
-  top: 1px;
-  transform-origin: 50% 18px; /* adjust radius from center */
-  opacity: .8;
-}
-.knob-arc .t0 { transform: translateX(-50%) rotate(-60deg); }
-.knob-arc .t1 { transform: translateX(-50%) rotate(-30deg); }
-.knob-arc .t2 { transform: translateX(-50%) rotate(0deg); }
-.knob-arc .t3 { transform: translateX(-50%) rotate(30deg); }
-.knob-arc .t4 { transform: translateX(-50%) rotate(60deg); }
-
-/* OFF state = pointer at low, warm glow */
-.oven-knob.off .knob-face { transform: rotate(-60deg); }
-.oven-knob.off .knob-center {
-  background: radial-gradient(circle at 35% 35%, #ffb347, #ff6a00 60%, #a53300 100%);
-}
-
-/* ON state = pointer rotates to “heat” and the center glows green */
-.oven-knob.on .knob-face { transform: rotate(75deg); }
-.oven-knob.on .knob-pointer {
-  background: linear-gradient(#4ade80, #16a34a);
-  box-shadow: 0 0 8px rgba(34,197,94,.6);
-}
-.oven-knob.on .knob-center {
-  background: radial-gradient(circle at 35% 35%, #b6ffc9, #22c55e 65%, #117a38 100%);
-  box-shadow: 0 0 12px rgba(34,197,94,.55);
-}
-.oven-knob.on .knob-center .flame {
-  background: radial-gradient(circle at 40% 40%, rgba(235,255,240,.95), rgba(120,255,170,.9) 60%, rgba(34,197,94,.85) 100%);
-  animation: flame-on 1.1s ease-in-out infinite;
-}
-@keyframes flame-on {
-  0% { transform: scale(0.98); opacity: .95; filter: brightness(1); }
-  50% { transform: scale(1.08); opacity: 1; filter: brightness(1.1); }
-  100% { transform: scale(0.98); opacity: .95; filter: brightness(1); }
-}
+/* === Typeahead menu should match the (now longer) input === */
 .typeahead-menu {
   position: absolute;
   top: 100%;
   left: 0;
   margin-top: 6px;
-  width: clamp(280px, 60vw, 640px);
+  width: 100%;        /* was clamp(...) — now stretches under input/form */
   max-height: 260px;
   overflow-y: auto;
   background: #fff;
@@ -397,4 +296,9 @@
 .typeahead-item:hover,
 .typeahead-item.active {
   background: #f3f4f6;
+}
+
+/* (Optional) keep things usable on smaller screens */
+@media (max-width: 420px) {
+  .kyool-form .ingredients-input { min-width: 220px; }
 }

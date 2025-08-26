@@ -156,7 +156,6 @@ export default function RecipePage() {
 
         <section className="rp-card">
           <h2 className="rp-h2">Instructions</h2>
-          <p>✔️ Mark every step as done</p>
           <ol className="rp-steps">
             {instructions.length ? (
               instructions.map((step, i) => {
