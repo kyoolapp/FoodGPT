@@ -5,9 +5,9 @@ import "./RecipePage.css";
 
 export default function RecipePage() {
   const { state } = useLocation();
-  const recipe = state?.recipe || null;  // unified prop from history or FoodGPT
+  const recipe = state?.recipe || null; // unified prop from history or FoodGPT
 
-  // ===== NEW: step completion state (per recipe) =====
+  // ===== Step completion state (per recipe) =====
   const recipeKey = useMemo(() => {
     const title = recipe?.recipe_name || "Recipe";
     return `kyool:doneSteps:${title}`;
@@ -29,16 +29,20 @@ export default function RecipePage() {
   }, [doneSteps, recipeKey]);
 
   const toggleStep = (n) => {
-    setDoneSteps((prev) => (prev.includes(n) ? prev.filter((x) => x !== n) : [...prev, n]));
+    setDoneSteps((prev) =>
+      prev.includes(n) ? prev.filter((x) => x !== n) : [...prev, n]
+    );
   };
 
   // celebration burst when reaching 100%
   const [burst, setBurst] = useState(false);
   const prevCompletion = useRef(0);
 
-  // ===== NEW: compute completion =====
+  // ===== Compute completion =====
   const totalSteps = recipe?.instructions?.length || 0;
-  const completion = totalSteps ? Math.round((doneSteps.length / totalSteps) * 100) : 0;
+  const completion = totalSteps
+    ? Math.round((doneSteps.length / totalSteps) * 100)
+    : 0;
 
   useEffect(() => {
     if (prevCompletion.current < 100 && completion === 100) {
@@ -81,12 +85,12 @@ export default function RecipePage() {
           {serving > 0 && (
             <div className="rp-sub">
               {serving} {serving === 1 ? "serving" : "servings"}
-              {time_option ?  ` •  ~${time_option} min` : ""}
+              {time_option ? ` •  ~${time_option} min` : ""}
             </div>
           )}
         </div>
 
-        {/* ===== NEW: progress bar in hero when steps exist ===== */}
+        {/* Progress bar when steps exist */}
         {totalSteps > 0 && (
           <div
             className="rp-progress"
@@ -99,9 +103,7 @@ export default function RecipePage() {
               <div className="rp-progress-bar" style={{ width: `${completion}%` }} />
             </div>
             <span className="rp-progress-label">{completion}% complete</span>
-          
           </div>
-
         )}
 
         <svg
@@ -137,9 +139,7 @@ export default function RecipePage() {
               </div>
 
               {estimated_calories && (
-                <div className="rp-cal-chip">
-                  Calories {estimated_calories}
-                </div>
+                <div className="rp-cal-chip">Calories {estimated_calories}</div>
               )}
               <div className="rp-nut-divider" />
               <div className="rp-nut-rows">
@@ -156,21 +156,27 @@ export default function RecipePage() {
 
         <section className="rp-card">
           <h2 className="rp-h2">Instructions</h2>
-          <p>✔️Mark every step as done</p>
+          <p>✔️ Mark every step as done</p>
           <ol className="rp-steps">
             {instructions.length ? (
               instructions.map((step, i) => {
                 const n = i + 1;
                 const done = doneSteps.includes(n);
+                const last = n === totalSteps;
+                const allDone = completion === 100;
+                const finalCompleted = last && done && allDone; // last step finished & everything complete
+
                 return (
                   <li
                     key={i}
-                    className={`rp-step ${done ? "rp-step-done" : ""}`}
-                    onClick={() => toggleStep(n)}
+                    className={`rp-step ${done ? "rp-step-done" : ""} ${finalCompleted ? "rp-step-final" : ""}`}
+                    onClick={() => { if (!finalCompleted) toggleStep(n); }}
                     role="button"
                     aria-pressed={done}
                     tabIndex={0}
-                    onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && toggleStep(n)}
+                    onKeyDown={(e) => {
+                      if ((e.key === "Enter" || e.key === " ") && !finalCompleted) toggleStep(n);
+                    }}
                   >
                     <div className={`rp-badge ${done ? "done" : ""}`}>
                       {done ? "✔" : n}
@@ -180,18 +186,25 @@ export default function RecipePage() {
                       <div className="rp-step-text">{step}</div>
                     </div>
 
-                    {/* === NEW: explicit toggle button per step === */}
+                    {/* Per-step toggle */}
                     <button
                       type="button"
                       className={`rp-step-toggle ${done ? "is-done" : ""}`}
                       onClick={(e) => {
-                        e.stopPropagation(); // don't trigger li's onClick
-                        toggleStep(n);
+                        e.stopPropagation();
+                        if (!finalCompleted) toggleStep(n);
                       }}
+                      disabled={finalCompleted}
                       aria-pressed={done}
-                      aria-label={done ? `Mark step ${n} as not done` : `Mark step ${n} as done`}
+                      aria-label={
+                        finalCompleted
+                          ? `Step ${n} completed`
+                          : done
+                            ? `Mark step ${n} as not done`
+                            : `Mark step ${n} as done`
+                      }
                     >
-                      {done ? "Undo" : "Done"}
+                      {finalCompleted ? "Completed" : (done ? "Undo" : "Done")}
                     </button>
                   </li>
                 );
@@ -208,7 +221,7 @@ export default function RecipePage() {
         </section>
       </main>
 
-      {/* ===== NEW: tiny confetti burst ===== */}
+      {/* Tiny confetti burst */}
       {burst && (
         <div className="rp-burst" aria-hidden="true">
           {Array.from({ length: 16 }).map((_, i) => <span key={i}>🎉</span>)}

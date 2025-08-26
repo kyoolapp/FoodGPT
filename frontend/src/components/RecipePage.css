@@ -254,3 +254,10 @@
 .rp-step-toggle.is-done:hover {
   filter: brightness(1.02);
 }
+.rp-step-final .rp-step-toggle[disabled] {
+  cursor: default;
+  opacity: 1;
+  background: #22c55e;
+  color: #fff;
+  border-color: #16a34a;
+}

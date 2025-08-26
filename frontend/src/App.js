@@ -39,7 +39,7 @@ function HomeScreen({ displayName, history }) {
         <section className="card recipe-card">
           <div className="card-head">
             <h2>Generate a Recipe</h2>
-            <p className="muted">Type ingredients (e.g., tofu, onion, spinach) and hit Generate.</p>
+            <p className="muted">Enter ingredients (e.g tofu,onion,spinach) choose oven, time and servings, then hit cook it.</p>
           </div>
           <div className="card-body">
             <FoodGPT userName={displayName} />

@@ -264,62 +264,62 @@
 /* ===== Oven Knob (unique control) ===== */
 .oven-knob {
   position: relative;
-  width: 56px;
-  height: 56px;
+  width: 40px;      /* was 56px */
+  height: 40px;     /* was 56px */
   border-radius: 50%;
   cursor: pointer;
   outline: none;
   display: inline-block;
   user-select: none;
-  /* subtle body with your preferred dark → warm gradient vibe */
   background: radial-gradient(120% 120% at 30% 30%, #1b1b1b 0%, #0f0f10 70%);
   box-shadow:
-    inset 0 2px 10px rgba(255, 255, 255, 0.06),
-    inset 0 -10px 20px rgba(0,0,0,0.5),
-    0 8px 18px rgba(0,0,0,0.25);
+    inset 0 2px 8px rgba(255, 255, 255, 0.06),
+    inset 0 -6px 12px rgba(0,0,0,0.5),
+    0 4px 10px rgba(0,0,0,0.25);
   border: 1px solid #131316;
   transition: box-shadow .25s ease, transform .1s ease;
 }
-.oven-knob:active { transform: scale(0.98); }
-.oven-knob:focus-visible { box-shadow: 0 0 0 3px rgba(255,153,0,.35), 0 8px 18px rgba(0,0,0,0.25); }
+.oven-knob:active { transform: scale(0.96); }
 
 /* face that rotates */
 .knob-face {
   position: absolute;
-  inset: 6px;
+  inset: 4px;       /* was 6px */
   border-radius: 50%;
   background: radial-gradient(140% 140% at 30% 30%, #2a2a2e 0%, #1b1c22 70%);
   box-shadow:
-    inset 0 2px 6px rgba(255,255,255,0.06),
-    inset 0 -6px 12px rgba(0,0,0,0.45);
+    inset 0 1px 4px rgba(255,255,255,0.06),
+    inset 0 -4px 8px rgba(0,0,0,0.45);
   transition: transform .35s cubic-bezier(.2,.8,.2,1);
 }
 
-/* pointer “notch” (like a real dial) */
+/* pointer notch */
 .knob-pointer {
   position: absolute;
-  top: 7px; /* distance from top rim */
+  top: 4px;         /* adjusted */
   left: 50%;
   transform: translateX(-50%);
-  width: 6px; height: 16px;
-  border-radius: 3px;
+  width: 4px;       /* was 6px */
+  height: 12px;     /* was 16px */
+  border-radius: 2px;
   background: linear-gradient(#ffb347, #ff5b00);
-  box-shadow: 0 0 6px rgba(255, 107, 0, .6);
-  transition: background .25s ease, box-shadow .25s ease;
+  box-shadow: 0 0 4px rgba(255, 107, 0, .6);
 }
 
-/* center badge with animated flame dot */
+/* center badge */
 .knob-center {
   position: absolute;
   inset: 50% auto auto 50%;
-  width: 18px; height: 18px;
+  width: 12px;      /* was 18px */
+  height: 12px;     /* was 18px */
   transform: translate(-50%, -50%);
   border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, #ffb347, #ff6a00 60%, #a53300 100%);
-  box-shadow: 0 0 10px rgba(255,120,0,.55);
+  box-shadow: 0 0 6px rgba(255,120,0,.55);
 }
 .knob-center .flame {
-  position: absolute; inset: 4px;
+  position: absolute;
+  inset: 3px;       /* adjusted */
   border-radius: 50%;
   background: radial-gradient(circle at 40% 40%, rgba(255,238,200,.95), rgba(255,170,0,.85) 60%, rgba(255,120,0,.8) 100%);
   filter: blur(0.3px);
@@ -334,12 +334,13 @@
 /* tick marks around the rim */
 .knob-arc { position: absolute; inset: 0; pointer-events: none; }
 .knob-arc .tick {
-  position: absolute;
-  width: 2px; height: 8px;
+  width: 2px;
+  height: 6px;      /* smaller */
   background: #3a3a40;
   border-radius: 1px;
-  left: 50%; top: 2px;
-  transform-origin: 50% 26px; /* radius from center */
+  left: 50%;
+  top: 1px;
+  transform-origin: 50% 18px; /* adjust radius from center */
   opacity: .8;
 }
 .knob-arc .t0 { transform: translateX(-50%) rotate(-60deg); }
@@ -372,4 +373,28 @@
   0% { transform: scale(0.98); opacity: .95; filter: brightness(1); }
   50% { transform: scale(1.08); opacity: 1; filter: brightness(1.1); }
   100% { transform: scale(0.98); opacity: .95; filter: brightness(1); }
+}
+.typeahead-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 6px;
+  width: clamp(280px, 60vw, 640px);
+  max-height: 260px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.08);
+  padding: 6px 0;
+  z-index: 20;
+}
+.typeahead-item {
+  padding: 10px 14px;
+  font: 400 15px/1.4 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  cursor: pointer;
+}
+.typeahead-item:hover,
+.typeahead-item.active {
+  background: #f3f4f6;
 }
