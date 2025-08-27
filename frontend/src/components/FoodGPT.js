@@ -171,14 +171,26 @@ export default function FoodGPT({ userName, onNewRecipe }) {
         user_id: userName,
       });
 
-      const recipeData = res?.data?.response;
+      const apiRecipe = res?.data?.response || {};
+
+      // Enrich with your UI selections so RecipePage can show "1 serving • ~5 min"
+      const selectedServing = serving ? parseInt(serving, 10) : apiRecipe.serving;
+      const selectedTime = timeOption ? parseInt(timeOption, 10) : apiRecipe.time_option;
+
+      const enrichedRecipe = {
+        ...apiRecipe,
+        // ensure ingredients list is present
+        ingredients,
+        // inject UI selections if API omitted them
+        serving: selectedServing,
+        time_option: selectedTime,
+      };
 
       // Build a history-friendly object (optimistic)
       const historyItem = {
-        id: recipeData?.id || `local-${Date.now()}`,
+        id: enrichedRecipe?.id || `local-${Date.now()}`,
         times: new Date().toLocaleString(),
-        ingredients,
-        ...recipeData,
+        ...enrichedRecipe,
       };
 
       if (onNewRecipe) onNewRecipe(historyItem);
@@ -187,7 +199,7 @@ export default function FoodGPT({ userName, onNewRecipe }) {
       navigate('/recipe', { state: { recipe: historyItem } });
     } catch (err) {
       console.error(err);
-      setError('Please select time and servings');
+      setError('Something went wrong! Please try again.');
     } finally {
       setLoading(false);
     }
