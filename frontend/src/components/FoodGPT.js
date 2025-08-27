@@ -187,7 +187,7 @@ export default function FoodGPT({ userName, onNewRecipe }) {
       navigate('/recipe', { state: { recipe: historyItem } });
     } catch (err) {
       console.error(err);
-      setError('Something went wrong! Please try again.');
+      setError('Please select time and servings');
     } finally {
       setLoading(false);
     }

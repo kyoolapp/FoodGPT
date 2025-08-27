@@ -65,20 +65,21 @@ function HomeScreen({ displayName, history, onAddHistory }) {
       <ul className="history-list">
         {history.slice(0, MAX_HOME_RECIPES).map((item) => (
           <li key={item.id} className="history-item">
-            <div className="hist-row">
-              {(item.ingredients || []).slice(0,6).map((ing, i) => (
-                <span key={i} className="chip">{ing}</span>
-              ))}
-            </div>
+            <div className="hist-time">{item.times}</div>
             <Link
               to="/recipe"
               state={{ recipe: item }}
               className="hist-title"
             >
               {item.recipe_name || 'Recipe'}
-            </Link>
-            <div className="hist-time">{item.times}</div>
+            </Link>  
+              <div className="hist-row">
+              {(item.ingredients || []).slice(0,6).map((ing, i) => (
+                <span key={i} className="chip">{ing}</span>
+              ))}
+            </div>
           </li>
+          
         ))}
       </ul>
 
