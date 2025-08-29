@@ -295,7 +295,7 @@
 }
 .typeahead-item:hover,
 .typeahead-item.active {
-  background: #f3f4f6;
+  background: #d5d5d5;
 }
 
 /* (Optional) keep things usable on smaller screens */

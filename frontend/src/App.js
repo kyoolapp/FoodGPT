@@ -67,7 +67,7 @@ function HomeScreen({ displayName, history, onAddHistory }) {
           <li key={item.id} className="history-item">
             <div className="hist-time">{item.times}</div>
             <Link
-              to="/recipe"
+              to={`/recipe/${item.id}`} //Navigating using ID param
               state={{ recipe: item }}
               className="hist-title"
             >
@@ -149,7 +149,7 @@ export default function App() {
         path="/"
         element={<HomeScreen displayName={displayName} history={history} onAddHistory={handleAddHistory} />}
       />
-      <Route path="/recipe" element={<RecipePage />} />
+      <Route path="/recipe/:id" element={<RecipePage />} /> {/* Use :id param */}
     </Routes>
   );
 }

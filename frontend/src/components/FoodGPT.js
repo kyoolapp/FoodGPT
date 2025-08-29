@@ -172,10 +172,11 @@ export default function FoodGPT({ userName, onNewRecipe }) {
       });
 
       const apiRecipe = res?.data?.response || {};
+      const apiRecipeId = res?.data?.id || null;
 
       // Enrich with your UI selections so RecipePage can show "1 serving • ~5 min"
       const selectedServing = serving ? parseInt(serving, 10) : apiRecipe.serving;
-      const selectedTime = timeOption ? parseInt(timeOption, 10) : apiRecipe.time_option;
+      const selectedTime = timeOption ? parseInt(timeOption, 5) : apiRecipe.time_option;
 
       const enrichedRecipe = {
         ...apiRecipe,
@@ -186,9 +187,14 @@ export default function FoodGPT({ userName, onNewRecipe }) {
         time_option: selectedTime,
       };
 
+
+      // Use Firestore ID if available, else fallback to local timestamp ID
+      const recipeId = apiRecipeId || `local-${Date.now()}`;
+      console.log('Generated recipe:', apiRecipeId);
+
       // Build a history-friendly object (optimistic)
       const historyItem = {
-        id: enrichedRecipe?.id || `local-${Date.now()}`,
+        id: recipeId,
         times: new Date().toLocaleString(),
         ...enrichedRecipe,
       };
@@ -196,7 +202,7 @@ export default function FoodGPT({ userName, onNewRecipe }) {
       if (onNewRecipe) onNewRecipe(historyItem);
 
       sessionStorage.setItem('kyool:lastRecipe', JSON.stringify(historyItem));
-      navigate('/recipe', { state: { recipe: historyItem } });
+      navigate(`/recipe/${recipeId}`, { state: { recipe: historyItem } });
     } catch (err) {
       console.error(err);
       setError('Something went wrong! Please try again.');

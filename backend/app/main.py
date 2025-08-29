@@ -104,8 +104,9 @@ async def generate_recipe(request: Request):
     doc_ref = db.collection("user-foodgpt").add(entry)
     recipe_id=doc_ref[1].id
     print(f"\nStored recipe with ID: {recipe_id}\n\n")
+    print(f"\nStored recipe data: {recipe_data}\n\n")
 
-    return {"response": recipe_data}
+    return {"id":recipe_id,"response": recipe_data}
 
 @app.get("/history/{user_id}")
 def get_history(user_id: str):
@@ -126,3 +127,13 @@ def get_history(user_id: str):
             history.append(item)
 
         return {"history": history}
+
+@app.get("/recipe/{recipe_id}")
+def get_recipe_by_id(recipe_id: str):
+    doc = db.collection("user-foodgpt").document(recipe_id).get()
+    if doc.exists:
+        data = doc.to_dict()
+        data["id"] = doc.id
+        print(f"\nFetched recipe data: {data}\n\n")
+        return data
+    return {"error": "Recipe not found."}

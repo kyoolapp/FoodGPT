@@ -1,12 +1,35 @@
 // src/components/RecipePage.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams} from "react-router-dom";
 import "./RecipePage.css";
+//import { useParams } from "react-router-dom";
+import axios from "axios";
+
 
 export default function RecipePage() {
   const { state } = useLocation();
-  const recipe = state?.recipe || null;
+  const { id } = useParams();
+  //const recipe = state?.recipe || null; // unified prop from history or FoodGPT
+  const [recipe, setRecipe] = useState(state?.recipe || null);
+  const [loading, setLoading] = useState(!recipe);
 
+
+  // Fetch recipe from backend if not passed via state
+  useEffect(() => {
+    if (!recipe && id) {
+      const fetchRecipe = async () => {
+        try {
+          const res = await axios.get(`https://api.kyoolapp.com/recipe/${id}`);
+          setRecipe(res.data);
+        } catch (err) {
+          console.error("Error fetching recipe:", err);
+        }
+      };
+      fetchRecipe();
+    }
+  }, [id, recipe]);
+
+  // ===== Step completion state (per recipe) =====
   const recipeKey = useMemo(() => {
     const title = recipe?.recipe_name || "Recipe";
     return `kyool:doneSteps:${title}`;
@@ -22,7 +45,9 @@ export default function RecipePage() {
   });
 
   useEffect(() => {
-    try { sessionStorage.setItem(recipeKey, JSON.stringify(doneSteps)); } catch {}
+    try {
+      sessionStorage.setItem(recipeKey, JSON.stringify(doneSteps));
+    } catch {}
   }, [doneSteps, recipeKey]);
 
   const toggleStep = (n) => {
@@ -31,11 +56,15 @@ export default function RecipePage() {
     );
   };
 
+  // celebration burst when reaching 100%
   const [burst, setBurst] = useState(false);
   const prevCompletion = useRef(0);
 
+  // ===== Compute completion =====
   const totalSteps = recipe?.instructions?.length || 0;
-  const completion = totalSteps ? Math.round((doneSteps.length / totalSteps) * 100) : 0;
+  const completion = totalSteps
+    ? Math.round((doneSteps.length / totalSteps) * 100)
+    : 0;
 
   useEffect(() => {
     if (prevCompletion.current < 100 && completion === 100) {
@@ -59,6 +88,10 @@ export default function RecipePage() {
     );
   }
 
+
+  
+
+
   const {
     recipe_name,
     ingredients = [],
@@ -69,22 +102,8 @@ export default function RecipePage() {
     time_option,
   } = recipe;
 
-  // --- NEW: robust labels for servings/time and show if either exists ---
-  const servingNum = Number(serving);
-  const hasServingNum = !Number.isNaN(servingNum) && servingNum > 0;
-  const servingLabel =
-    hasServingNum
-      ? `${servingNum} ${servingNum === 1 ? "serving" : "servings"}`
-      : (typeof serving === "string" && serving.trim() ? serving.trim() : "");
 
-  const timeNum = Number(time_option);
-  const hasTime = !Number.isNaN(timeNum) && timeNum > 0;
-  const timeLabel = hasTime ? `~${timeNum} min` : "";
 
-  const showMeta = Boolean(servingLabel || timeLabel);
-  // ---------------------------------------------------------
-
-  const isLocked = completion === 100;
 
   return (
     <div className="rp-root">
@@ -92,17 +111,15 @@ export default function RecipePage() {
         <div className="rp-hero-inner">
           <Link to="/" className="rp-back">← Back to Home</Link>
           <h1 className="rp-title">{recipe_name || "Recipe"}</h1>
-
-          {/* FIX: show if either serving or time exists */}
-          {showMeta && (
+          {serving > 0 && (
             <div className="rp-sub">
-              {servingLabel}
-              {servingLabel && timeLabel ? " • " : ""}
-              {timeLabel}
+              {serving} {serving === 1 ? "serving" : "servings"}
+              {time_option ? ` •  ~${time_option} min` : ""}
             </div>
           )}
         </div>
 
+        {/* Progress bar when steps exist */}
         {totalSteps > 0 && (
           <div
             className="rp-progress"
@@ -118,8 +135,13 @@ export default function RecipePage() {
           </div>
         )}
 
-        <svg className="rp-wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M0,64L80,69.3C160,75,320,85,480,96C640,107,800,117,960,106.7C1120,96,1280,64,1360,48L1440,32L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z" />
+        <svg
+          className="rp-wave"
+          viewBox="0 0 1440 120"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path d="M0,64L80,69.3C160,75,320,85,480,96C640,107,800,117,960,106.7C1120,96,1280,64,1360,48L1440,32L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"></path>
         </svg>
       </header>
 
@@ -127,7 +149,11 @@ export default function RecipePage() {
         <section className="rp-card rp-card--ing">
           <h2 className="rp-h2">Ingredients</h2>
           <ul className="rp-ingredients">
-            {ingredients.length ? ingredients.map((it, i) => <li key={i}>{it}</li>) : <li>—</li>}
+            {ingredients.length ? (
+              ingredients.map((it, i) => <li key={i}>{it}</li>)
+            ) : (
+              <li>—</li>
+            )}
           </ul>
 
           {Object.keys(nutritional_values).length > 0 && (
@@ -135,11 +161,15 @@ export default function RecipePage() {
               <div className="rp-nutrition-title">
                 Nutrition Facts
                 <div className="rp-nut-foot">
-                  {hasServingNum ? `Per serving • ${servingNum} total ${servingNum === 1 ? "serving" : "servings"}` : ""}
+                  {serving > 0
+                    ? `Per serving • ${serving} total ${serving === 1 ? "serving" : "servings"}`
+                    : ""}
                 </div>
               </div>
 
-              {estimated_calories && <div className="rp-cal-chip">Calories {estimated_calories}</div>}
+              {estimated_calories && (
+                <div className="rp-cal-chip">Calories {estimated_calories}</div>
+              )}
               <div className="rp-nut-divider" />
               <div className="rp-nut-rows">
                 {Object.entries(nutritional_values).map(([key, val]) => (
@@ -161,39 +191,48 @@ export default function RecipePage() {
                 const n = i + 1;
                 const done = doneSteps.includes(n);
                 const last = n === totalSteps;
-                const finalCompleted = isLocked && last && done;
+                const allDone = completion === 100;
+                const finalCompleted = last && done && allDone; // last step finished & everything complete
 
                 return (
                   <li
                     key={i}
                     className={`rp-step ${done ? "rp-step-done" : ""} ${finalCompleted ? "rp-step-final" : ""}`}
-                    onClick={() => { if (!isLocked) toggleStep(n); }}
+                    onClick={() => { if (!finalCompleted) toggleStep(n); }}
                     role="button"
                     aria-pressed={done}
                     tabIndex={0}
                     onKeyDown={(e) => {
-                      if ((e.key === "Enter" || e.key === " ") && !isLocked) toggleStep(n);
+                      if ((e.key === "Enter" || e.key === " ") && !finalCompleted) toggleStep(n);
                     }}
                   >
-                    <div className={`rp-badge ${done ? "done" : ""}`}>{done ? "✔" : n}</div>
+                    <div className={`rp-badge ${done ? "done" : ""}`}>
+                      {done ? "✔" : n}
+                    </div>
+
                     <div className="rp-step-body">
                       <div className="rp-step-text">{step}</div>
                     </div>
+
+                    {/* Per-step toggle */}
                     <button
                       type="button"
                       className={`rp-step-toggle ${done ? "is-done" : ""}`}
-                      onClick={(e) => { e.stopPropagation(); if (!isLocked) toggleStep(n); }}
-                      disabled={isLocked}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!finalCompleted) toggleStep(n);
+                      }}
+                      disabled={finalCompleted}
                       aria-pressed={done}
                       aria-label={
-                        isLocked
-                          ? `Recipe completed`
+                        finalCompleted
+                          ? `Step ${n} completed`
                           : done
-                          ? `Mark step ${n} as not done`
-                          : `Mark step ${n} as done`
+                            ? `Mark step ${n} as not done`
+                            : `Mark step ${n} as done`
                       }
                     >
-                      {isLocked ? (last ? "Completed" : "Done") : (done ? "Undo" : "Done")}
+                      {finalCompleted ? "Completed" : (done ? "Undo" : "Done")}
                     </button>
                   </li>
                 );
@@ -210,6 +249,7 @@ export default function RecipePage() {
         </section>
       </main>
 
+      {/* Tiny confetti burst */}
       {burst && (
         <div className="rp-burst" aria-hidden="true">
           {Array.from({ length: 16 }).map((_, i) => <span key={i}>🎉</span>)}
