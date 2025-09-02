@@ -65,23 +65,68 @@
 }
 
 /* steps */
-.rp-steps{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px; }
-.rp-step{
-  display:flex; gap:12px; align-items:flex-start;
-  background:#fff; border:1px solid #cfd7e4; border-radius:12px; padding:14px 16px;
+.rp-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px; /* a little more breathing room */
+}
+
+.rp-step {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: #fff;
+  border: 1px solid #cfd7e4;
+  border-radius: 12px;
+  padding: 16px 18px;
   transition: box-shadow .15s ease, transform .12s ease, border-color .15s ease;
 }
-.rp-step:hover{ box-shadow:0 10px 22px rgba(32,62,122,.12); border-color:#b8c6dd; transform: translateY(-1px); }
-.rp-badge{
-  width:34px; height:34px; border-radius:999px;
-  background: linear-gradient(135deg, #2573ff, #3b82f6);
-  color:#fff; display:grid; place-items:center; font-weight:800; font-size:16px;
-  box-shadow: 0 6px 16px rgba(59,130,246,.35);
-  font-variant-numeric: tabular-nums;
+.rp-step:hover {
+  box-shadow: 0 8px 20px rgba(32,62,122,.12);
+  border-color: #b8c6dd;
+  transform: translateY(-1px);
 }
-.rp-step-body{display:flex; flex-direction:column; gap:4px;}
-.rp-step-text{ color:#12151c; font: 500 16px/1.65 Inter, sans-serif; }
-.rp-step-time{ color:#52607a; font: 400 13px/1.4 Inter, sans-serif; }
+
+/* Step number badge = consistent circular "bullet" */
+.rp-badge {
+  flex-shrink: 0;             /* prevents squishing */
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2573ff, #3b82f6);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 4px 12px rgba(59,130,246,.35);
+  margin-top: 2px;            /* visually align with text */
+}
+
+/* Step text block */
+.rp-step-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.rp-step-text {
+  color: #12151c;
+  font: 500 16px/1.65 Inter, sans-serif;
+}
+
+.rp-step-time {
+  color: #52607a;
+  font: 400 13px/1.4 Inter, sans-serif;
+}
+
 /* Make the main grid asymmetric (narrower ingredients column) */
 .rp-main{
   max-width:1200px; margin:-64px auto 48px; padding:0 20px;
