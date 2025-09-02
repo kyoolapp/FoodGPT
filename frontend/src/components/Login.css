@@ -58,7 +58,7 @@ body{margin:0; background:var(--surface-2); color:var(--ink);
   margin-top: 70px;
   background: transparent;
   border: 1px solid var(--ring);
-  border-color: #000000;
+  border-color: #ffffff;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   padding: 24px;
@@ -76,7 +76,7 @@ body{margin:0; background:var(--surface-2); color:var(--ink);
 .btn-primary:focus-visible{outline:none; box-shadow: var(--focus);}
 
 .btn-google{
-  background:#fff; color:#111; border:1px solid #2e2e2e; border-radius: 99px;
+  background:#fff; color:#111; border:1px solid #d6dae3; border-radius: 99px;
   display:flex; align-items:center; justify-content:center; gap:10px;
 }
 .btn-google:hover{ background:#fafafa; transform: translateY(-1px); }
