@@ -1,6 +1,7 @@
 This is the prototype of foodgpt. I have started with the backend and right now, it's running as a server. 
 I created a test frontend and connected with the backend now.
 
+Transferred to Kyoolapp git
 
 How to run?
 First open two terminals, one for frontend and one for backend. 
