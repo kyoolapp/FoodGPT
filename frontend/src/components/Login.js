@@ -44,7 +44,7 @@ function Login({ onLogin }) {
       <header className="login-hero">
         <div className="login-hero-inner">
           <div className="login-brand">
-            <span className="login-logo-dot" />
+            <img src="/kyoolapp.png" alt="logo" className="brand-logo" />
             <span>KyoolApp</span>
           </div>
 
@@ -69,7 +69,7 @@ function Login({ onLogin }) {
       </header>
 
       {/* Centered card */}
-      <main className="login-container">
+      <main className="login-container" >
         <section className="login-card">
           <h2 className="login-card-title">Sign in</h2>
           <p className="login-card-sub">Use Google or your email and password.</p>
