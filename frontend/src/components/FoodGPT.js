@@ -227,36 +227,37 @@ export default function FoodGPT({ userName, onNewRecipe }) {
     <div className="fg-wrap">
       <section className="fg-card">
         {/* Header */}
-        <div className="fg-head">
-          <div className="fg-title">
-            <span className="fg-spark" aria-hidden>✨</span>
-            <span>Generate a Recipe</span>
-          </div>
+<div className="fg-head">
+  <div className="fg-title">
+    <span className="fg-spark" aria-hidden>✨</span>
+    <span>Generate a Recipe</span>
+  </div>
+</div>
 
-          {/* Tabs */}
-          <div className="fg-tabs" role="tablist" aria-label="Recipe mode">
-            <button
-              role="tab"
-              aria-selected={mode === 'ingredients'}
-              className={`fg-tab ${mode === 'ingredients' ? 'active' : ''}`}
-              onClick={() => setMode('ingredients')}
-              type="button"
-            >
-              <span className="fg-tab-icon" aria-hidden>🥗</span>
-              By Ingredients
-            </button>
-            <button
-              role="tab"
-              aria-selected={mode === 'dish'}
-              className={`fg-tab ${mode === 'dish' ? 'active' : ''}`}
-              onClick={() => setMode('dish')}
-              type="button"
-            >
-              <span className="fg-tab-icon" aria-hidden>📖</span>
-              By Dish Type
-            </button>
-          </div>
-        </div>
+{/* Tabs moved BELOW title */}
+<div className="fg-tabs" role="tablist" aria-label="Recipe mode">
+  <button
+    role="tab"
+    aria-selected={mode === 'ingredients'}
+    className={`fg-tab ${mode === 'ingredients' ? 'active' : ''}`}
+    onClick={() => setMode('ingredients')}
+    type="button"
+  >
+    <span className="fg-tab-icon" aria-hidden>🥗</span>
+    By Ingredients
+  </button>
+  <button
+    role="tab"
+    aria-selected={mode === 'dish'}
+    className={`fg-tab ${mode === 'dish' ? 'active' : ''}`}
+    onClick={() => setMode('dish')}
+    type="button"
+  >
+    <span className="fg-tab-icon" aria-hidden>📖</span>
+    By Dish Type
+  </button>
+</div>
+
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="fg-form" style={{ position: 'relative' }}>
@@ -266,53 +267,50 @@ export default function FoodGPT({ userName, onNewRecipe }) {
 
           {/* Input only (CTA moved to bottom) */}
           <div className="fg-row-single">
-            <input
-              ref={inputRef}
-              type="text"
-              value={foodInput}
-              onChange={(e) => setFoodInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={
-                mode === 'ingredients'
-                  ? 'e.g. eggs, spinach, cheese, tomatoes'
-                  : 'e.g. Pad Thai, Biryani, Alfredo pasta'
-              }
-              className="ingredients-input fg-input"
-              aria-autocomplete={mode === 'ingredients' ? 'list' : undefined}
-              aria-expanded={openSug}
-              aria-controls="ingredient-suggestions"
-              aria-activedescendant={openSug ? `sug-${activeIdx}` : undefined}
-            />
-          </div>
+  <input
+    ref={inputRef}
+    type="text"
+    value={foodInput}
+    onChange={(e) => setFoodInput(e.target.value)}
+    onKeyDown={handleKeyDown}
+    placeholder={
+      mode === 'ingredients'
+        ? 'e.g. eggs, spinach, cheese, tomatoes'
+        : 'e.g. Pad Thai, Biryani, Alfredo pasta'
+    }
+    className="ingredients-input fg-input"
+    aria-autocomplete={mode === 'ingredients' ? 'list' : undefined}
+    aria-expanded={openSug}
+    aria-controls="ingredient-suggestions"
+    aria-activedescendant={openSug ? `sug-${activeIdx}` : undefined}
+  />
 
-
-
-          {/* Suggestions popover */}
-          {mode === 'ingredients' && openSug && suggestions.length > 0 && (
-            <ul
-              id="ingredient-suggestions"
-              ref={sugRef}
-              role="listbox"
-              className="typeahead-menu"
-            >
-              {suggestions.map((s, i) => (
-                <li
-                  key={s}
-                  id={`sug-${i}`}
-                  role="option"
-                  aria-selected={i === activeIdx}
-                  className={`typeahead-item ${i === activeIdx ? 'active' : ''}`}
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    acceptSuggestion(s);
-                  }}
-                  onMouseEnter={() => setActiveIdx(i)}
-                >
-                  {s}
-                </li>
-              ))}
-            </ul>
-          )}
+  {mode === 'ingredients' && openSug && suggestions.length > 0 && (
+    <ul
+      id="ingredient-suggestions"
+      ref={sugRef}
+      role="listbox"
+      className="typeahead-menu"
+    >
+      {suggestions.map((s, i) => (
+        <li
+          key={s}
+          id={`sug-${i}`}
+          role="option"
+          aria-selected={i === activeIdx}
+          className={`typeahead-item ${i === activeIdx ? 'active' : ''}`}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            acceptSuggestion(s);
+          }}
+          onMouseEnter={() => setActiveIdx(i)}
+        >
+          {s}
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
 
           {/* Controls row – no blue boxes, just light labels + selects */}
           <div className="fg-controls">
