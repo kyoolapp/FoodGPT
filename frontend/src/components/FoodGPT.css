@@ -353,3 +353,76 @@
 /* keep icons/labels subtle like the reference */
 .fg-ico { opacity: .9; }
 .fg-field-label { opacity: .95; }
+/* ===== Mobile polish (≤ 480px) ===== */
+@media (max-width: 480px) {
+  /* Card spacing & typography */
+  .fg-card { padding: 14px 14px 16px; border-radius: 16px; }
+  .fg-title { font-size: 16px; }
+  .fg-label, .fg-field-label { font-size: 13px; }
+  .fg-help { font-size: 11.5px; }
+
+  /* Tabs: make them a true segmented control that never overflows */
+  .fg-head { flex-direction: column; align-items: stretch; gap: 10px; }
+  .fg-tabs {
+    display: flex;                /* instead of grid */
+    width: 100%;
+    gap: 6px;
+    padding: 5px;
+    border-radius: 999px;
+    overflow: hidden;             /* prevent bleed outside card */
+  }
+  .fg-tab {
+    flex: 1 1 0;
+    padding: 10px 8px;
+    font-size: 13px;
+    justify-content: center;
+    white-space: nowrap;
+  }
+
+  /* Input */
+  .fg-input { padding: 14px 14px; border-radius: 14px; }
+
+  /* Controls: stack cleanly, full-width, consistent spacing */
+  .fg-controls { grid-template-columns: 1fr; gap: 12px; margin-top: 12px; }
+
+  .fg-field {
+    grid-template-columns: auto 1fr;      /* icon + label on row 1 */
+    grid-template-rows: auto auto;        /* control on row 2 */
+    row-gap: 6px;
+  }
+
+  /* Select pills */
+  .fg-select {
+    width: 100%;
+    min-width: 0;
+    padding: 12px 14px;
+    border-radius: 12px;
+  }
+
+  /* Oven Usage: toggle + Off inline; sized like the reference */
+  .fg-oven .toggle-btn { grid-column: 1; grid-row: 2; }
+  .fg-oven-status {
+    grid-column: 2; grid-row: 2;
+    margin: 0 0 0 10px;
+    align-self: center;
+    font-size: 12.5px;
+  }
+  .toggle-btn {
+    width: 38px; height: 20px;
+    background: rgba(255,255,255,.26);
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 999px;
+  }
+  .toggle-btn .thumb { width: 16px; height: 16px; left: 3px; }
+  .toggle-btn.toggled .thumb { left: calc(100% - 19px); }
+
+  /* CTA full-width with comfortable tap target */
+  .fg-cta-bar { margin-top: 14px; }
+  .fg-cta { width: 100%; padding: 14px 16px; border-radius: 12px; font-size: 15px; }
+}
+
+/* Extra safeguard for ultra-narrow devices (≤ 360px) */
+@media (max-width: 360px) {
+  .fg-tab { font-size: 12.5px; padding: 9px 6px; }
+  .fg-input, .fg-select { border-radius: 12px; }
+}
