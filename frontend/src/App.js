@@ -17,8 +17,8 @@ function HomeScreen({ displayName, history, onAddHistory }) {
       <header className="app-hero">
         <nav className="nav">
           <div className="brand">
-            <img src="/kyoolapp.png" alt="logo" className="brand-logo" />
-            <span>KyoolApp</span>
+            <img src="/kyool_app_logo.png" alt="logo" className="brand-logo" />
+            <h2>KyoolApp</h2>
           </div>
           <div className="nav-actions">
             <button onClick={() => signOut(auth)} className="btn btn-ghost">Log out</button>
