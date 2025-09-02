@@ -17,7 +17,7 @@ function HomeScreen({ displayName, history, onAddHistory }) {
       <header className="app-hero">
         <nav className="nav">
           <div className="brand">
-            <img src="/kyool_app_logo.png" alt="logo" className="brand-logo" />
+            <img src="/kyoolapp_logo.png" alt="logo" className="brand-logo" />
             <h2>KyoolApp</h2>
           </div>
           <div className="nav-actions">

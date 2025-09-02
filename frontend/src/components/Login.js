@@ -44,8 +44,8 @@ function Login({ onLogin }) {
       <header className="login-hero">
         <div className="login-hero-inner">
           <div className="login-brand">
-            <img src="/kyoolapp.png" alt="logo" className="brand-logo" />
-            <span>KyoolApp</span>
+            <img src="/kyoolapp_logo.png" alt="logo" className="brand-logo" />
+            <h1>KyoolApp</h1>
           </div>
 
           <div className="login-hero-content">
