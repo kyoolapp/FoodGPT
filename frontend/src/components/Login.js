@@ -44,15 +44,15 @@ function Login({ onLogin }) {
       <header className="login-hero">
         <div className="login-hero-inner">
           <div className="login-brand">
-            <img src="/kyoolapp_logo.png" alt="logo" className="brand-logo" />
-            <h1>KyoolApp</h1>
+            <img src="/kyoolapp_logo.png" alt="KyoolApp logo" className="brand-logo" />
+            <h2>KyoolApp</h2>
           </div>
 
           <div className="login-hero-content">
             <p className="login-tagline">Cook cool with Kyool</p>
-            <h1 className="login-hero-title">Welcome back</h1>
+            <h1 className="login-hero-title">Turn Ingredients Into Delicious Meals – Instantly.</h1>
             <p className="login-hero-sub">
-              Sign in to start turning ingredients into recipes.
+              Sign in to start cooking smarter today.
             </p>
           </div>
         </div>
@@ -68,8 +68,8 @@ function Login({ onLogin }) {
         </svg>
       </header>
 
-      {/* Centered card */}
-      <main className="login-container" >
+      {/* Content grid: sign-in card + benefits */}
+      <main className="login-container login-grid">
         <section className="login-card">
           <h2 className="login-card-title">Sign in</h2>
           <p className="login-card-sub">Use Google or your email and password.</p>
@@ -127,6 +127,30 @@ function Login({ onLogin }) {
             </button>
           </form>
         </section>
+
+        {/* WHY KYOOL – value prop & highlights */}
+        <aside className="login-benefits" aria-labelledby="why-kyool-heading">
+          <p className="benefits-intro">
+            Kyool helps you make the most out of what’s in your kitchen. Just add your
+            ingredients, and we’ll create step-by-step recipes tailored to your taste,
+            diet, and lifestyle.
+          </p>
+
+          <ul className="benefits-list">
+            <li>
+              <span className="benefit-bullet" aria-hidden>✓</span>
+              Save time and money with smart meal ideas
+            </li>
+            <li>
+              <span className="benefit-bullet" aria-hidden>✓</span>
+              Reduce food waste by using what you already have
+            </li>
+            <li>
+              <span className="benefit-bullet" aria-hidden>✓</span>
+              Get healthier, personalized recipes with zero guesswork
+            </li>
+          </ul>
+        </aside>
       </main>
 
       <footer className="login-footer">
@@ -138,4 +162,4 @@ function Login({ onLogin }) {
   );
 }
 
-export default Login;
+export default Login;

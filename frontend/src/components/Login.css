@@ -139,3 +139,86 @@ body{margin:0; background:var(--surface-2); color:var(--ink);
 .login-container::after{
   content: none !important;
 }
+/* ------- Layout: grid for card + benefits ------- */
+.login-grid {
+  display: grid;
+  gap: 28px;
+}
+
+/* Two columns on wider screens */
+@media (min-width: 960px) {
+  .login-grid {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+/* ------- Benefits panel ------- */
+.login-benefits {
+  background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.9));
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 16px;
+  padding: 22px 22px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+}
+
+.benefits-title {
+  margin: 0 0 10px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+.benefits-intro {
+  margin: 0 0 14px;
+  line-height: 1.6;
+  color: #2a2a2a;
+}
+
+/* Keep bullets tight and scannable */
+.benefits-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.benefits-list li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 12px 12px;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.benefit-bullet {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  font-weight: 800;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: #f4f7ff;
+}
+
+/* Subtle hover for interactivity on desktop */
+@media (hover:hover) {
+  .benefits-list li:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 18px rgba(0,0,0,0.06);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+}
+
+/* Spacing adjustment so benefits align with card content top */
+@media (min-width: 960px) {
+  .login-card { margin-top: 0; }
+  .login-benefits { margin-top: 2px; }
+}
