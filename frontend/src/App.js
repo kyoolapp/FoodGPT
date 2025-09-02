@@ -39,8 +39,6 @@ function HomeScreen({ displayName, history, onAddHistory }) {
       <main className="container">
         <section className="card recipe-card">
           <div className="card-head">
-            <h2>Generate a Recipe</h2>
-            <p className="muted">Enter ingredients (e.g tofu,onion,spinach) choose oven, time and servings, then hit cook it.</p>
           </div>
           <div className="card-body">
             {/* pass the callback down */}

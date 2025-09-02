@@ -1,3 +1,192 @@
+/* ===== Wrapper & gradient card (matches target screenshot) ===== */
+.fg-wrap {
+  max-width: 720px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+.fg-card {
+  position: relative;
+  border-radius: 18px;
+  padding: 18px 18px 20px;
+  background: linear-gradient(180deg, #7b61ff 0%, #6c70ff 24%, #5a84ff 55%, #47a0ff 100%);
+  box-shadow: 0 18px 40px rgba(28, 45, 106, 0.25);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+/* ===== Header (title + tabs) ===== */
+.fg-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.fg-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 800 18px/1 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: .2px;
+}
+.fg-spark { filter: drop-shadow(0 2px 6px rgba(255,255,255,.35)); }
+
+/* Tabs with white active pill */
+.fg-tabs {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 10px;
+  background: rgba(255,255,255,.14);
+  padding: 6px;
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+}
+.fg-tab {
+  border: 0;
+  background: transparent;
+  color: rgba(255,255,255,.9);
+  font: 700 14px/1 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  padding: 10px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background .2s ease, color .2s ease, transform .12s ease;
+}
+.fg-tab.active {
+  background: #ffffff;
+  color: #2b2b2b;
+  box-shadow: 0 6px 16px rgba(0,0,0,.12);
+}
+.fg-tab:active { transform: translateY(1px); }
+.fg-tab-icon { font-size: 16px; line-height: 1; }
+
+/* ===== Form ===== */
+.fg-form { position: relative; }
+.fg-label {
+  display: block;
+  font: 700 14px/1.2 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  margin: 8px 2px 8px;
+  opacity: .95;
+}
+
+/* Single wide input row (CTA moved to bottom) */
+.fg-row-single { display: block; }
+
+.fg-input {
+  width: 100%;
+  padding: 15px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.35);
+  background: rgba(255,255,255,.18);
+  color: #fff;
+  outline: none;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+.fg-input::placeholder { color: rgba(255,255,255,.8); }
+
+.fg-help {
+  margin: 6px 2px 0;
+  font: 500 12px/1.4 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: rgba(255,255,255,.95);
+}
+
+/* ===== Controls row: light, no big blue boxes ===== */
+.fg-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+/* inline field (icon + label + control) */
+.fg-field {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  color: #fff;
+}
+
+/* Oven: add little "Off/On" under the row */
+.fg-oven { grid-template-columns: auto 1fr auto; }
+.fg-oven-status {
+  grid-column: 1 / -1;
+  margin-left: 28px;
+  margin-top: 4px;
+  font: 600 12px/1.2 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: rgba(255,255,255,.95);
+}
+
+.fg-ico { filter: drop-shadow(0 2px 6px rgba(0,0,0,.2)); }
+.fg-field-label {
+  font: 700 14px/1.2 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  opacity: .95;
+}
+
+/* Selects = soft pills */
+.fg-select {
+  border: 1px solid rgba(255,255,255,.35);
+  background: rgba(255,255,255,.18);
+  color: #fff;
+  border-radius: 12px;
+  padding: 10px 12px;
+  outline: none;
+  min-width: 160px;
+}
+.fg-select option { color: #111; }
+
+/* ===== Full-width CTA bar at bottom ===== */
+.fg-cta-bar { margin-top: 16px; }
+.fg-cta {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(90deg, #ff8f1f, #ff4b3e);
+  color: #fff;
+  border: 0;
+  padding: 14px 22px;
+  border-radius: 12px;
+  font: 800 16px/1 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  box-shadow: 0 10px 24px rgba(255, 100, 60, .35);
+  cursor: pointer;
+  transition: transform .05s ease, box-shadow .2s ease, opacity .2s ease;
+}
+.fg-cta:hover { box-shadow: 0 14px 28px rgba(255, 100, 60, .45); }
+.fg-cta:active { transform: translateY(1px); }
+.fg-cta-icon { font-size: 16px; }
+
+/* ===== Typeahead (unchanged behavior, styled to match) ===== */
+.typeahead-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  max-height: 260px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 14px 28px rgba(0,0,0,.18);
+  padding: 6px 0;
+  z-index: 20;
+  color: #111;
+}
+.typeahead-item {
+  padding: 10px 14px;
+  font: 500 15px/1.4 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  cursor: pointer;
+}
+.typeahead-item:hover,
+.typeahead-item.active { background: #f0f2f7; }
+
+/* ===== Toggle (yours, preserved) ===== */
 .toggle-btn {
   width: 55px; height: 30px;
   border-radius: 99px;
@@ -8,7 +197,7 @@
   box-shadow: inset 0 0 8px rgba(0,0,0,0.6);
   transition: background 0.3s ease;
 }
-.toggle-btn .thumb {  
+.toggle-btn .thumb {
   width: 24px; height: 24px;
   background: radial-gradient(circle, #ff9f1c, #ff3c00);
   border-radius: 50%;
@@ -18,329 +207,149 @@
   box-shadow: 0 0 8px rgba(255,60,0,0.7);
   transition: left 0.3s ease, background 0.3s ease;
 }
-.toggle-btn.toggled {
-  background: #222;
-}
+.toggle-btn.toggled { background: #222; }
 .toggle-btn.toggled .thumb {
   left: calc(100% - 28px);
   background: radial-gradient(circle, #22c55e, #15803d);
   box-shadow: 0 0 10px rgba(34,197,94,0.8);
 }
-/* Better accessibility focus for the toggle */
 .toggle-btn:focus-visible {
   outline: 2px solid #22c55e;
   outline-offset: 2px;
 }
 
-.generate-btn {
-  background-color: #000000;
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 10px 0;
-  cursor: pointer;
-  border-radius: 5px;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.748);
-  transition: background-color 0.3s ease;
+/* ===== Responsive ===== */
+@media (max-width: 820px) {
+  .fg-controls { grid-template-columns: 1fr; }
+  .fg-select { min-width: 0; width: 100%; }
 }
-.generate-btn:hover {
-  background-color: #7c7c7c;
+/* === FIX: make fields look like the target (icon+label on top, control below) === */
+.fg-controls{
+  display:grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap:14px;
+  margin-top:14px;
 }
 
-/* === Make the textbox longer === */
-/* Turn the form into a row so the input can grow */
-.kyool-form {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  position: relative; /* keeps the typeahead menu anchored */
-}
-/* Grow the input to fill available space */
-.ingredients-input {
-  flex: 1;
-  width: auto;       /* override old width */
-  max-width: none;   /* remove any caps */
-  padding: 15px 20px;
-  border: 1px solid #1b1b1b;
-  border-radius: 99px;
-  box-sizing: border-box;
+/* one field = 2 rows: label row then control row */
+.fg-field{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  grid-template-rows:auto auto;
+  column-gap:8px;
+  row-gap:6px;
+  align-items:center;
+  background: transparent;          /* kill the blue chip look */
+  border: 0;                         /* kill borders from previous style */
+  padding: 0;                        /* remove chip padding */
+  color:#fff;
 }
 
-.time-select {
-  border: 2px solid #303030;
-  border-radius: 99px;
-  box-sizing: border-box;
-  padding: 10px 10px;
-  margin-left: 15px;
+/* icon + label on row 1 */
+.fg-ico{ grid-column:1; grid-row:1; font-size:16px; opacity:.9; filter:drop-shadow(0 1px 4px rgba(0,0,0,.2)); }
+.fg-field-label{ grid-column:2; grid-row:1; font-weight:700; opacity:.95; }
+
+/* control spans full width on row 2 */
+.fg-select{
+  grid-column:1 / -1; grid-row:2;
+  min-width:0; width:100%;
+  border:1px solid rgba(255,255,255,.35);
+  background: rgba(255,255,255,.16);
+  color:#fff;
+  border-radius:12px;
+  padding:12px 14px;
+  outline:none;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
 }
-.serving-select {
-  border: 2px solid #303030;
-  border-radius: 99px;
-  box-sizing: border-box;
-  padding: 10px 10px;
-  margin-left: 15px;
+.fg-select option{ color:#111; }
+
+/* Oven field: toggle on row 2, status on row 3 */
+.fg-oven .toggle-btn{ grid-column:1 / -1; grid-row:2; justify-self:start; }
+.fg-oven-status{
+  grid-column:1 / -1; grid-row:3;
+  margin-left:28px; margin-top:4px;
+  font:600 12px/1.2 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color:rgba(255,255,255,.95);
 }
 
-/* Container + header */
-.kyool-recipe {
-  width: 100%;
-  max-width: 1280px;
-  background: #fff;
-  border-radius: 12px;
-  border: 1px solid #eee;
-  box-shadow: 0 2px 24px rgba(0,0,0,0.04);
-  overflow: hidden;
+/* === Toggle appearance (soft gray when Off, bright when On) === */
+.toggle-btn{
+  width:48px; height:26px;
+  background: rgba(255,255,255,.35);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.12);
 }
-.kyool-header {
-  height: 72px;
-  background: #FAF3E8;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 16px;
+.toggle-btn .thumb{
+  width:22px; height:22px; left:3px;
+  background: linear-gradient(#ffffff,#dcdcdc);
+  box-shadow: 0 1px 3px rgba(0,0,0,.25);
 }
-.kyool-brand {
-  color: #111;
-  font: 400 20px/24px Roboto, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+.toggle-btn.toggled{
+  background:#222;
+}
+.toggle-btn.toggled .thumb{
+  left: calc(100% - 25px);
+  background: radial-gradient(circle, #22c55e, #15803d);
+  box-shadow: 0 0 10px rgba(34,197,94,.8);
 }
 
-/* Top block */
-.kyool-top { padding: 24px; }
-.kyool-back {
-  color: #111;
-  text-decoration: none;
-  font: 400 16px/1.4 Roboto, sans-serif;
+/* Typeahead keeps working under the long input */
+.typeahead-menu{ top: calc(100% + 6px); }
+
+/* Responsive: stack fields on small screens */
+@media (max-width: 820px){
+  .fg-controls{ grid-template-columns:1fr; }
 }
-.kyool-title {
-  margin: 8px 0 6px;
-  font: 700 28px/1.2 Roboto, sans-serif;
-  color: #111;
+/* --- Oven Usage: align like the reference --- */
+/* Put toggle and "Off/On" on the SAME row (row 2), side by side */
+.fg-oven .toggle-btn { 
+  grid-column: 1; 
+  grid-row: 2; 
+  justify-self: start; 
 }
-.kyool-desc {
-  margin: 0 0 16px;
-  font: 400 16px/1.6 Roboto, sans-serif;
-  color: #222;
-}
-.kyool-meta {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.chip {
-  background: #393939;
-  color: #fafafa;
-  border-radius: 6px;
-  padding: 4px 10px;
-  font: 400 14px/1 Roboto, sans-serif;
+.fg-oven-status {
+  grid-column: 2;        /* sits to the right of the toggle */
+  grid-row: 2;
+  margin: 0 0 0 10px;    /* space from toggle */
+  align-self: center;
+  font-weight: 600;
+  color: rgba(255,255,255,.9);
 }
 
-/* Layout */
-.kyool-main {
-  display: grid;
-  grid-template-columns: 1fr 250px;
-  gap: 24px;
-  padding: 0 24px 24px;
-}
-@media (max-width: 980px) {
-  .kyool-main { grid-template-columns: 1fr; }
-}
-
-/* Left column */
-.kyool-left h2 {
-  font: 700 22px/1.2 Roboto, sans-serif;
-  margin: 18px 0 8px;
-  color: #111;
-}
-.kyool-ingredients {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 16px;
-  columns: 2;
-  column-gap: 24px;
-}
-@media (max-width: 720px) { .kyool-ingredients { columns: 1; } }
-.kyool-ingredients li {
-  break-inside: avoid;
-  padding-left: 10px;
+/* --- Toggle look: smaller, soft gray when OFF; subtle border like the mock --- */
+.toggle-btn{
+  width: 40px;
+  height: 22px;
+  background: rgba(255,255,255,.26);                      /* soft gray pill */
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 999px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.12);
   position: relative;
-  margin: 6px 0;
-  font: 400 16px/1.7 Roboto, sans-serif;
+  transition: background .25s ease, border-color .25s ease;
 }
-.kyool-ingredients li::before {
-  content: '';
-  width: 6px; height: 6px;
-  border: 2px solid #FFCD29;
-  position: absolute; left: 0; top: 10px;
-}
-
-/* Steps */
-.kyool-steps {
-  list-style: none; padding: 0; margin: 8px 0 0;
-  display: flex; flex-direction: column; gap: 12px;
-}
-.step-card {
-  display: flex; gap: 12px;
-  border: 1px solid #324158; border-radius: 10px;
-  padding: 14px 16px;
-  background: #fff;
-}
-.step-badge {
-  width: 28px; height: 28px; border-radius: 9999px;
-  background: #2C7FFF; color: #fff;
-  aspect-ratio: 1 / 1;   
-  display: flex; align-items: center; justify-content: center;
-  font: 600 16px/1 Roboto, sans-serif;
-}
-.step-body { display: flex; flex-direction: column; gap: 4px; }
-.step-text { font: 400 16px/1.6 Roboto, sans-serif; color: #111; }
-.step-time { font: 400 14px/1.4 Roboto, sans-serif; color: #333; }
-
-/* Right column — Nutrition */
-.kyool-right { padding-top: 20px; }
-.nutrition-card {
-  background: #FFD966;
-  border-radius: 10px;
-  padding: 10px;
-}
-.nutrition-title {
-  display: flex; align-items: center; gap: 8px;
-  font: 600 16px/1.2 Roboto, sans-serif; color: #000;
-}
-.nutrition-cal {
-  display: inline-block;
-  background: #FFEDB8;
-  border-radius: 5px;
-  padding: 4px 10px;
-  margin: px 0 8px;
-  font: 500 16px/1 Roboto, sans-serif;
-}
-.divider {
-  height: 1px; background: #1B1B1B; opacity: 0.6; margin: 12px 0;
-}
-.nutrition-grid { display: grid; grid-template-columns: 1fr auto; row-gap: 8px; }
-.nutrition-row { display: contents; }
-.nutrition-row > span { font: 400 16px/1.7 Roboto, sans-serif; }
-
-/* Controls row tidy-up */
-.controls-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 10px; }
-
-/* Optional: raw text block (debug) */
-.raw-recipe { background: #f7f7f7; padding: 12px; border-radius: 8px; white-space: pre-wrap; }
-
-/* ===== Recipe page layout (scoped) ===== */
-.recipe-page{ max-width:1200px; margin:0 auto; padding:24px 20px 64px; }
-.app-hero + .recipe-page{ margin-top:-8px; }
-
-.rp-top{ margin-bottom:10px; }
-.rp-back{ display:inline-block; margin-bottom:8px; color:#111; text-decoration:none; font-weight:600; }
-.rp-back:hover{ text-decoration:underline; }
-
-.rp-title{ margin:0 0 6px; font:800 36px/1.2 Inter, ui-sans, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:#111; }
-.rp-chips{ display:flex; gap:10px; flex-wrap:wrap; }
-.rp-chips .chip{ background:#393939; color:#fafafa; border-radius:6px; padding:4px 10px; font:400 14px/1 Inter, sans-serif; }
-
-.rp-grid{ display:grid; grid-template-columns:minmax(0,1fr) 380px; gap:24px; align-items:start; }
-@media (max-width:980px){ .rp-grid{ grid-template-columns:1fr; } }
-.rp-main{ grid-column:1/2; }
-.rp-aside{ grid-column:2/3; }
-
-/* keep steps tidy */
-.kyool-steps{ list-style:none; padding:0; margin:8px 0 0; display:flex; flex-direction:column; gap:12px; width:100%; }
-.step-card{ display:flex; gap:12px; border:1px solid #324158; border-radius:10px; padding:14px 16px; background:#fff; }
-/* Step number badges */
-.step-badge, 
-.rp-badge {
-  width: 32px;          /* same width */
-  height: 32px;         /* same height */
-  min-width: 32px;      /* stop shrinking */
-  min-height: 32px;     
-  border-radius: 50%;   /* always circular */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 1;       /* avoid stretching */
-  font-variant-numeric: tabular-nums; /* keeps 1-digit & 2-digit same spacing */
-  background: linear-gradient(135deg, #a855f7, #6366f1); /* purple gradient */
-  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.35);    
-}
-.step-text{ font:400 16px/1.6 Inter, sans-serif; color:#111; }
-.step-time{ font:400 14px/1.4 Inter, sans-serif; color:#333; }
-
-/* === Typeahead menu should match the (now longer) input === */
-.typeahead-menu {
+.toggle-btn .thumb{
+  width: 16px;
+  height: 16px;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
   position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 6px;
-  width: 100%;        /* was clamp(...) — now stretches under input/form */
-  max-height: 260px;
-  overflow-y: auto;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  box-shadow: 0 10px 24px rgba(0,0,0,.08);
-  padding: 6px 0;
-  z-index: 20;
-}
-.typeahead-item {
-  padding: 10px 14px;
-  font: 400 15px/1.4 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  cursor: pointer;
-}
-.typeahead-item:hover,
-.typeahead-item.active {
-  background: #d5d5d5;
+  border-radius: 50%;
+  background: linear-gradient(#ffffff,#e8e8e8);           /* light knob */
+  box-shadow: 0 1px 2px rgba(0,0,0,.2);
+  transition: left .25s ease, box-shadow .25s ease, background .25s ease;
 }
 
-/* (Optional) keep things usable on smaller screens */
-@media (max-width: 420px) {
-  .kyool-form .ingredients-input { min-width: 220px; }
+/* ON state: gentle green, crisp white knob */
+.toggle-btn.toggled{
+  background: linear-gradient(90deg,#4ade80,#22c55e);
+  border-color: rgba(255,255,255,.55);
 }
-.kyool-form {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  position: relative;
-}
-
-/* Make the textbox long on wider screens, and override the 60% width on small */
-@media (min-width: 721px) {
-  .kyool-form .ingredients-input { flex: 1; width: auto; max-width: none; }
-}
-@media (max-width: 720px) {
-  .ingredients-input { width: 100%; }        /* full width on phones */
+.toggle-btn.toggled .thumb{
+  left: calc(100% - 19px);
+  background: #ffffff;
+  box-shadow: 0 0 0 2px rgba(34,197,94,.25) inset;
 }
 
-/* Stack input and button vertically on phones */
-@media (max-width: 640px) {
-  .kyool-form { flex-direction: column; align-items: stretch; gap: 12px; }
-  .generate-btn { width: 100%; margin: 0; padding: 14px 16px; font-size: 16px; }
-}
-
-/* Controls: keep compact and make selects full-width on phones */
-@media (max-width: 680px) {
-  .controls-row { gap: 12px; margin: 12px 0; }
-  .time-select, .serving-select {
-    width: 100%;
-    margin-left: 0 !important;   /* override inline styles */
-    margin-top: 6px !important;
-    padding: 12px 14px;
-    font-size: 16px;             /* avoids iOS zoom on focus */
-    flex: 1 0 100%;
-  }
-  /* Slightly smaller toggle on tight screens */
-  .toggle-btn { width: 50px; height: 28px; }
-  .toggle-btn .thumb { width: 22px; height: 22px; }
-  .toggle-btn.toggled .thumb { left: calc(100% - 26px); }
-}
-
-/* Extra-small phones */
-@media (max-width: 400px) {
-  .kyool-desc { font-size: 14px; }
-}
+/* keep icons/labels subtle like the reference */
+.fg-ico { opacity: .9; }
+.fg-field-label { opacity: .95; }

@@ -1,4 +1,3 @@
-// src/components/FoodGPT.js
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -18,24 +17,20 @@ const INGREDIENTS = [
   'eggs','egg whites','chicken','salmon','tuna','shrimp','beef','pork','lamb',
   'tofu','paneer','tempeh','chickpeas','black beans','kidney beans','lentils',
   'turkey','sardines','mackerel','crab','lobster','clams','scallops',
-
   // Indian Daals / Pulses
   'toor dal','arhar dal','moong dal','moong whole','chana dal','black chana',
   'masoor dal','whole masoor','urad dal','whole urad','moth dal','kulthi dal',
   'rajma','lobia','kabuli chana','horse gram','green gram','yellow moong dal',
   'split urad dal','split masoor dal','sambar dal','pigeon peas',
-
   // Dairy & alternatives
   'milk','yogurt','greek yogurt','buttermilk','cream','whipping cream',
   'cheddar','mozzarella','feta','parmesan','gouda','brie','blue cheese',
   'butter','ghee','margarine','coconut milk','almond milk','soy milk','oat milk',
-
   // Grains & starches
   'rice','basmati rice','brown rice','quinoa','oats','rolled oats','steel-cut oats',
   'pasta','spaghetti','penne','macaroni','noodles','ramen','udon','soba',
   'bread','whole wheat bread','sourdough','baguette','tortilla','pita','naan',
   'potato','sweet potato','yam','plantain','barley','millet','couscous','bulgur',
-
   // Vegetables
   'spinach','kale','lettuce','romaine','arugula','cabbage','brussels sprouts',
   'tomato','cherry tomato','onion','red onion','green onion','shallot','garlic',
@@ -43,26 +38,21 @@ const INGREDIENTS = [
   'mushroom','portobello','shiitake','broccoli','cauliflower','zucchini','squash','eggplant',
   'asparagus','okra','green beans','snow peas','snap peas','pumpkin','radish','turnip',
   'celery','leek','artichoke','fennel','avocado','corn','peas',
-
   // Fruits
   'apple','banana','orange','lemon','lime','mango','pineapple','grape','strawberry',
   'blueberry','raspberry','blackberry','peach','pear','plum','apricot','melon','watermelon',
   'pomegranate','kiwi','papaya','coconut','date','fig','cherry',
-
   // Herbs
   'basil','cilantro','parsley','mint','curry leaves','dill','rosemary','thyme','sage',
   'oregano','chives','bay leaf','lemongrass','tarragon',
-
   // Spices
   'cumin','turmeric','coriander','cardamom','cloves','nutmeg','cinnamon',
   'chili powder','garam masala','paprika','smoked paprika','cayenne pepper','mustard seeds',
   'black pepper','white pepper','salt','sea salt','saffron','fenugreek',
-
   // Condiments & sauces
   'ketchup','mustard','mayonnaise','soy sauce','fish sauce','oyster sauce','hoisin sauce',
   'sriracha','hot sauce','bbq sauce','vinegar','balsamic vinegar','apple cider vinegar',
   'olive oil','vegetable oil','canola oil','sesame oil','peanut butter','tahini','honey','maple syrup',
-
   // Baking & pantry
   'flour','whole wheat flour','almond flour','baking powder','baking soda',
   'sugar','brown sugar','powdered sugar','cocoa powder','vanilla extract','yeast',
@@ -72,6 +62,7 @@ const INGREDIENTS = [
 export default function FoodGPT({ userName, onNewRecipe }) {
   const navigate = useNavigate();
 
+  const [mode, setMode] = useState('ingredients'); // 'ingredients' | 'dish'
   const [foodInput, setFoodInput] = useState('');
   const [timeOption, setTimeOption] = useState('');
   const [serving, setServing] = useState('');
@@ -79,21 +70,26 @@ export default function FoodGPT({ userName, onNewRecipe }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // --- Typeahead state ---
+  // --- Typeahead state (ingredients mode only) ---
   const [openSug, setOpenSug] = useState(false);
   const [activeIdx, setActiveIdx] = useState(0);
   const [suggestions, setSuggestions] = useState([]);
   const inputRef = useRef(null);
   const sugRef = useRef(null);
 
-  // token after the last comma
   const currentToken = useMemo(() => {
-    const parts = foodInput.split(',');
+    if (mode !== 'ingredients') return '';
+    const parts = String(foodInput).split(',');
     return parts[parts.length - 1].trim().toLowerCase();
-  }, [foodInput]);
+  }, [foodInput, mode]);
 
-  // filter suggestions
   useEffect(() => {
+    if (mode !== 'ingredients') {
+      setSuggestions([]);
+      setOpenSug(false);
+      setActiveIdx(0);
+      return;
+    }
     if (!currentToken) {
       setSuggestions([]);
       setOpenSug(false);
@@ -106,20 +102,22 @@ export default function FoodGPT({ userName, onNewRecipe }) {
     setSuggestions(found);
     setOpenSug(found.length > 0);
     setActiveIdx(0);
-  }, [currentToken]);
+  }, [currentToken, mode]);
 
   const acceptSuggestion = (value) => {
+    if (mode !== 'ingredients') return;
     const pick = value ?? suggestions[activeIdx];
     if (!pick) return;
 
-    const parts = foodInput.split(',');
-    parts[parts.length - 1] = ` ${pick}`; // neat space
+    const parts = String(foodInput).split(',');
+    parts[parts.length - 1] = ` ${pick}`;
     const next = parts.join(',').replace(/^,\s*/, '');
     setFoodInput(next.endsWith(',') ? next : next + ', ');
     setOpenSug(false);
   };
 
   const handleKeyDown = (e) => {
+    if (mode !== 'ingredients') return;
     if (!openSug && ['ArrowDown','ArrowUp','Enter','Tab'].includes(e.key)) {
       if (suggestions.length && currentToken) setOpenSug(true);
     }
@@ -155,44 +153,59 @@ export default function FoodGPT({ userName, onNewRecipe }) {
     e.preventDefault();
     setError('');
 
-    const ingredients = normalizeIngredients(foodInput);
-    if (!ingredients.length) {
-      setError('Please enter at least one ingredient (comma-separated).');
-      return;
+    let ingredients = [];
+    let dishName = '';
+
+    if (mode === 'ingredients') {
+      ingredients = normalizeIngredients(foodInput);
+      if (!ingredients.length) {
+        setError('Please enter at least one ingredient (comma-separated).');
+        return;
+      }
+    } else {
+      dishName = String(foodInput).trim();
+      if (!dishName) {
+        setError('Please enter a dish name (e.g., “Pad Thai”, “Biryani”).');
+        return;
+      }
     }
 
     setLoading(true);
     try {
-      const res = await axios.post('https://api.kyoolapp.com/generate-recipe/', {
-        ingredients,
+      const body = {
         oven_option: toggled ? 'with' : 'without',
         time_option: timeOption ? parseInt(timeOption, 10) : null,
         serving_option: serving ? parseInt(serving, 10) : null,
         user_id: userName,
-      });
+      };
+
+      if (mode === 'ingredients') {
+        body.ingredients = ingredients;
+        body.mode = 'ingredients';
+      } else {
+        body.ingredients = [];
+        body.mode = 'dish';
+        body.dish_name = dishName;
+      }
+
+      const res = await axios.post('https://api.kyoolapp.com/generate-recipe/', body);
 
       const apiRecipe = res?.data?.response || {};
       const apiRecipeId = res?.data?.id || null;
 
-      // Enrich with your UI selections so RecipePage can show "1 serving • ~5 min"
       const selectedServing = serving ? parseInt(serving, 10) : apiRecipe.serving;
-      const selectedTime = timeOption ? parseInt(timeOption, 5) : apiRecipe.time_option;
+      const selectedTime = timeOption ? parseInt(timeOption, 10) : apiRecipe.time_option;
 
       const enrichedRecipe = {
         ...apiRecipe,
-        // ensure ingredients list is present
-        ingredients,
-        // inject UI selections if API omitted them
+        ingredients: mode === 'ingredients' ? ingredients : (apiRecipe.ingredients ?? []),
+        dish_name: mode === 'dish' ? dishName : (apiRecipe.dish_name ?? ''),
+        mode,
         serving: selectedServing,
         time_option: selectedTime,
       };
 
-
-      // Use Firestore ID if available, else fallback to local timestamp ID
       const recipeId = apiRecipeId || `local-${Date.now()}`;
-      console.log('Generated recipe:', apiRecipeId);
-
-      // Build a history-friendly object (optimistic)
       const historyItem = {
         id: recipeId,
         times: new Date().toLocaleString(),
@@ -200,7 +213,6 @@ export default function FoodGPT({ userName, onNewRecipe }) {
       };
 
       if (onNewRecipe) onNewRecipe(historyItem);
-
       sessionStorage.setItem('kyool:lastRecipe', JSON.stringify(historyItem));
       navigate(`/recipe/${recipeId}`, { state: { recipe: historyItem } });
     } catch (err) {
@@ -212,108 +224,165 @@ export default function FoodGPT({ userName, onNewRecipe }) {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-4" style={{ marginLeft: '20px' }}>
-      <form onSubmit={handleSubmit} className="mb-4 kyool-form" style={{ position: 'relative' }}>
-        <input
-          ref={inputRef}
-          type="text"
-          value={foodInput}
-          onChange={(e) => setFoodInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Enter ingredients (e.g., eggs, spinach)"
-          className="ingredients-input"
-          aria-autocomplete="list"
-          aria-expanded={openSug}
-          aria-controls="ingredient-suggestions"
-          aria-activedescendant={openSug ? `sug-${activeIdx}` : undefined}
-        />
-        <button
-          style={{ marginLeft: '10px', borderRadius: '10px', cursor: 'pointer' }}
-          type="submit"
-          className="generate-btn"
-          disabled={loading}
-        >
-          {loading ? 'Loading...' : 'Cook It'}
-        </button>
+    <div className="fg-wrap">
+      <section className="fg-card">
+        {/* Header */}
+        <div className="fg-head">
+          <div className="fg-title">
+            <span className="fg-spark" aria-hidden>✨</span>
+            <span>Generate a Recipe</span>
+          </div>
 
-        {/* Suggestions popover */}
-        {openSug && suggestions.length > 0 && (
-          <ul
-            id="ingredient-suggestions"
-            ref={sugRef}
-            role="listbox"
-            className="typeahead-menu"
-          >
-            {suggestions.map((s, i) => (
-              <li
-                key={s}
-                id={`sug-${i}`}
-                role="option"
-                aria-selected={i === activeIdx}
-                className={`typeahead-item ${i === activeIdx ? 'active' : ''}`}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  acceptSuggestion(s);
-                }}
-                onMouseEnter={() => setActiveIdx(i)}
+          {/* Tabs */}
+          <div className="fg-tabs" role="tablist" aria-label="Recipe mode">
+            <button
+              role="tab"
+              aria-selected={mode === 'ingredients'}
+              className={`fg-tab ${mode === 'ingredients' ? 'active' : ''}`}
+              onClick={() => setMode('ingredients')}
+              type="button"
+            >
+              <span className="fg-tab-icon" aria-hidden>🥗</span>
+              By Ingredients
+            </button>
+            <button
+              role="tab"
+              aria-selected={mode === 'dish'}
+              className={`fg-tab ${mode === 'dish' ? 'active' : ''}`}
+              onClick={() => setMode('dish')}
+              type="button"
+            >
+              <span className="fg-tab-icon" aria-hidden>📖</span>
+              By Dish Type
+            </button>
+          </div>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="fg-form" style={{ position: 'relative' }}>
+          <label className="fg-label">
+            {mode === 'ingredients' ? 'Enter Ingredients , choose oven, time and servings, then hit cook it' : 'Enter a Dish'}
+          </label>
+
+          {/* Input only (CTA moved to bottom) */}
+          <div className="fg-row-single">
+            <input
+              ref={inputRef}
+              type="text"
+              value={foodInput}
+              onChange={(e) => setFoodInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={
+                mode === 'ingredients'
+                  ? 'e.g. eggs, spinach, cheese, tomatoes'
+                  : 'e.g. Pad Thai, Biryani, Alfredo pasta'
+              }
+              className="ingredients-input fg-input"
+              aria-autocomplete={mode === 'ingredients' ? 'list' : undefined}
+              aria-expanded={openSug}
+              aria-controls="ingredient-suggestions"
+              aria-activedescendant={openSug ? `sug-${activeIdx}` : undefined}
+            />
+          </div>
+
+
+
+          {/* Suggestions popover */}
+          {mode === 'ingredients' && openSug && suggestions.length > 0 && (
+            <ul
+              id="ingredient-suggestions"
+              ref={sugRef}
+              role="listbox"
+              className="typeahead-menu"
+            >
+              {suggestions.map((s, i) => (
+                <li
+                  key={s}
+                  id={`sug-${i}`}
+                  role="option"
+                  aria-selected={i === activeIdx}
+                  className={`typeahead-item ${i === activeIdx ? 'active' : ''}`}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    acceptSuggestion(s);
+                  }}
+                  onMouseEnter={() => setActiveIdx(i)}
+                >
+                  {s}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {/* Controls row – no blue boxes, just light labels + selects */}
+          <div className="fg-controls">
+            {/* Oven */}
+            <div className="fg-field fg-oven">
+              <span className="fg-ico" aria-hidden>🔥</span>
+              <span className="fg-field-label">Oven Usage</span>
+              <button
+                type="button"
+                className={`toggle-btn ${toggled ? 'toggled' : ''}`}
+                onClick={() => setToggled(!toggled)}
+                role="switch"
+                aria-checked={toggled}
+                aria-label={`Oven ${toggled ? 'on' : 'off'}`}
               >
-                {s}
-              </li>
-            ))}
-          </ul>
-        )}
-      </form>
+                <span className="thumb" />
+              </button>
+              <span className="fg-oven-status">{toggled ? 'On' : 'Off'}</span>
+            </div>
 
-      <div className="controls-row">
-        {/* Simple oven toggle */}
-        <span>Oven Usage</span>
-        <button
-          type="button"
-          className={`toggle-btn ${toggled ? 'toggled' : ''}`}
-          onClick={() => setToggled(!toggled)}
-          role="switch"
-          aria-checked={toggled}
-          aria-label={`Oven ${toggled ? 'on' : 'off'}`}
-          style={{ marginLeft: '20px', marginRight: '10px' }}
-        >
-          <span className="thumb" />
-        </button>
-        <span>{toggled ? 'On' : 'Off'}</span>
+            {/* Time */}
+            <div className="fg-field">
+              <span className="fg-ico" aria-hidden>⏱️</span>
+              <span className="fg-field-label">Cooking Time</span>
+              <select
+                aria-label="Select time"
+                value={timeOption}
+                onChange={(e) => setTimeOption(e.target.value)}
+                className="fg-select"
+              >
+                <option value="" disabled>Select time</option>
+                {['5','10','15','20','25','30','40','50','60'].map(val => (
+                  <option key={val} value={val}>
+                    {val === '60' ? '1 hour' : `${val} minutes`}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        {/* Time select */}
-        <select
-          aria-label="Select time"
-          style={{ marginLeft: '40px', cursor: 'pointer' }}
-          value={timeOption}
-          onChange={(e) => setTimeOption(e.target.value)}
-          className="time-select"
-        >
-          <option value="" disabled>⏰ Cooking time</option>
-          {['5','10','15','20','25','30','40','50','60'].map(val => (
-            <option key={val} value={val}>
-              {val} {val === '60' ? '1 hour' : 'minutes'}
-            </option>
-          ))}
-        </select>
+            {/* Servings */}
+            <div className="fg-field">
+              <span className="fg-ico" aria-hidden>🧑‍🍳</span>
+              <span className="fg-field-label">Servings</span>
+              <select
+                aria-label="Select servings"
+                value={serving}
+                onChange={(e) => setServing(e.target.value)}
+                className="fg-select"
+              >
+                <option value="" disabled>Select servings</option>
+                {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
+                  <option key={n} value={n}>
+                    {n} {n === 1 ? 'serving' : 'servings'}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
-        {/* Servings select */}
-        <select
-          aria-label="Select servings"
-          style={{ marginLeft: '40px', cursor: 'pointer' }}
-          value={serving}
-          onChange={(e) => setServing(e.target.value)}
-          className="serving-select"
-        >
-          <option value="" disabled>🥣 Servings</option>
-          {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
-            <option key={n} value={n}>
-              {n} {n === 1 ? 'serving' : 'servings'}
-            </option>
-          ))}
-        </select>
-      </div>
+          {/* Full-width CTA at the bottom */}
+          <div className="fg-cta-bar">
+            <button type="submit" className="generate-btn fg-cta" disabled={loading}>
+              <span className="fg-cta-icon" aria-hidden>🍳</span>
+              {loading ? 'Loading…' : 'Cook It'}
+            </button>
+          </div>
 
-      {error && <p className="text-red-500" style={{ marginTop: 12 }}>{error}</p>}
+          {error && <p className="fg-error">{error}</p>}
+        </form>
+      </section>
     </div>
   );
 }
