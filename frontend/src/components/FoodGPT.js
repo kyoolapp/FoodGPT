@@ -190,7 +190,7 @@ export default function FoodGPT({ userName, onNewRecipe }) {
 
       console.log("Request body:", body);    
 
-      const res = await axios.post('http://localhost:8000/generate-recipe/', body);
+      const res = await axios.post('https://api.kyoolapp.com/generate-recipe/', body);
 
       const apiRecipe = res?.data?.response || {};
       const apiRecipeId = res?.data?.id || null;
