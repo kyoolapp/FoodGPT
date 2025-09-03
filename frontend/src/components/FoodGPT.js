@@ -188,7 +188,9 @@ export default function FoodGPT({ userName, onNewRecipe }) {
         body.dish_name = dishName;
       }
 
-      const res = await axios.post('https://api.kyoolapp.com/generate-recipe/', body);
+      console.log("Request body:", body);    
+
+      const res = await axios.post('http://localhost:8000/generate-recipe/', body);
 
       const apiRecipe = res?.data?.response || {};
       const apiRecipeId = res?.data?.id || null;
@@ -312,8 +314,11 @@ export default function FoodGPT({ userName, onNewRecipe }) {
   )}
 </div>
 
+
           {/* Controls row – no blue boxes, just light labels + selects */}
+          {mode === 'ingredients' && (
           <div className="fg-controls">
+            
             {/* Oven */}
             <div className="fg-field fg-oven">
               <span className="fg-ico" aria-hidden>🔥</span>
@@ -368,7 +373,9 @@ export default function FoodGPT({ userName, onNewRecipe }) {
                 ))}
               </select>
             </div>
+
           </div>
+          )}
 
           {/* Full-width CTA at the bottom */}
           <div className="fg-cta-bar">

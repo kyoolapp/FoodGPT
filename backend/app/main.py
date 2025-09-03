@@ -33,20 +33,47 @@ db = firestore.Client.from_service_account_json("../keys/foodgpt-468206-aebce83d
 async def generate_recipe(request: Request): 
     data = await request.json() 
     ingredients = data.get("ingredients") 
+    mode=data.get("mode")
     oven_option = data.get("oven_option")
     time_option = data.get("time_option")
     serving_option = data.get("serving_option", 1)  # Default to 1 serving if not provided
     user_id = data.get("user_id","guest")
-    if not ingredients: return {"error": "No ingredients provided."} 
     oven_text = ""
     time_text=""
     serving_text= ""
-    if oven_option:
-        oven_text = f" this recipe should be prepared {'with' if oven_option == 'with' else 'without'} an oven"
-        time_text = f" and I got upto {time_option} minutes"
-        serving_text = f" for {serving_option} serving{'s' if serving_option > 1 else ''}"
 
-    prompt = (
+    if mode=="dish":                                                                                                             
+        dish_name = data.get("dish_name")
+        if not dish_name: return {"error": "No dish name provided."}
+        prompt = (
+            f"You are a professional cookbook author. Suggest a healthy, complete recipe for the dish: {dish_name}. The instructions must be detailed and accurate, along with the time it will take for the recipe to be cooked. It is always for 1 serving."
+            "Use U.S. kitchen units by default (tbsp, tsp, cups, oz) and add metric in parentheses when quantities are ≥ 100 g/ml."
+            "Return strictly numbers only for nutritional values and calories (do not include units like 'g' or 'kcal').\n\n"
+            "Return the answer strictly in this JSON format, no extra text:\n\n"
+            "{\n"
+        '  "recipe_name": "<recipe name>",\n'
+        '  "serving": "<number of servings>",\n'
+        '  "time_option": "<time taken to cook the recipe>",\n'
+        '  "ingredients": ["item1", "item2", "item3"],\n'
+        '  "instructions": ["step1", "step2", "step3"],\n'
+        '  "estimated_calories": "<calories>",\n'
+        '  "nutritional_values": {\n'
+        '      "protein": "<g>",\n'
+        '      "fat": "<g>",\n'
+        '      "carbohydrates": "<g>",\n'
+        '      "sugar": "<g>",\n'
+        '      "fiber": "<g>"\n'
+        "  }\n"
+        "}\n"
+        )
+    else:
+        if not ingredients: return {"error": "No ingredients provided."} 
+        if oven_option:
+            oven_text = f" this recipe should be prepared {'with' if oven_option == 'with' else 'without'} an oven"
+            time_text = f" and I got upto {time_option} minutes"
+            serving_text = f" for {serving_option} serving{'s' if serving_option > 1 else ''}"
+
+        prompt = (
         f"You are a professional cookbook author and food‑safety‑aware chef. You ALWAYS produce complete, structured, unambiguous recipes. You must follow the “Output contract” exactly and never omit required fields. Use U.S. kitchen units by default (tbsp, tsp, cups, oz) and add metric in parentheses when quantities are ≥ 100 g/ml. Assume the user wants vegetarian when possible if protein is unspecified. If essential ingredients are missing, propose close substitutes in a “Substitutions” field. If I need to buy some ingredients for the recipe to cook, suggest them in the instructions. If durations are missing, estimate conservative, realistic timings. Never invent nutrition claims beyond rough, per‑serving estimates. Suggest a common healthy recipe using only the following ingredients: {ingredients}. {oven_text}, {serving_text} {time_text}.\n"
         "Also include estimated calories and nutritional values in grams.(strictly numbers only, don't mention the unit).\n\n"
         "Return the answer strictly in this JSON format, no extra text:\n\n"
@@ -65,7 +92,7 @@ async def generate_recipe(request: Request):
         "}\n"
     ) 
     #print("\n\nDEBUG prompt:", prompt)
-    async with httpx.AsyncClient(timeout=240) as client: 
+    async with httpx.AsyncClient(timeout=120) as client: 
         response = await client.post( 
        f"http://localhost:11434/api/generate", 
             json={
@@ -94,10 +121,10 @@ async def generate_recipe(request: Request):
     entry = {
         #"ingredients": ingredients,
         "oven_option": oven_option,
-        "time_option": time_option,
+        #"time_option": time_option,
         #"response": recipe_response,
         "times": datetime.datetime.utcnow().isoformat(),
-        "serving": serving_option,
+        #"serving": serving_option,
         "user_id": user_id,
         **recipe_data  # Unpack structured recipe fields directly
     }
