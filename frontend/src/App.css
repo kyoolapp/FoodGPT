@@ -1,390 +1,209 @@
-.App {
-  text-align: center;
-}
+/* =========================================================
+   KyoolApp — Home Styles (clean & polished)
+   ========================================================= */
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.app-heading {
-  color: #000000;
-  text-align: center;
-}
-
-.app-slogan{
-  color: #555555;
-  text-align: center;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 20px;
-}
-
-.greet-user {
-  margin-left: 20px;
-  color: #000000;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 32px;
-}
-
-.logout-btn {
-  background-color: #000000;
-  border: none;
-  color: white;
-  padding: 10px 10px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 12px;
-  margin: 90px 20px;
-  cursor: pointer;
-  border-radius: 99px;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.748);
-}
-
-.logout-btn:hover {
-  background-color: #7c7c7c;
-}
-
+/* ---------- Design tokens ---------- */
 :root{
-  --grad-start:#8a36d1;   /* tweak to match your screenshot */
+  --bg:#f6f7fb;
+  --surface:#ffffff;
+  --ink:#0f172a;
+  --muted:#6b7280;
+
+  --primary:#4f46e5;         /* indigo */
+  --primary-700:#4338ca;
+
+  --ring:#e5e7eb;
+  --shadow:0 10px 30px rgba(17,24,39,.08);
+
+  --grad-start:#8a36d1;       /* hero gradient */
   --grad-mid:#6b47ff;
   --grad-end:#4e60ff;
-  --ink:#0f0f11;
-  --muted:#6b7280;
-  --surface:#ffffff;
-  --surface-2:#f6f7fb;
-  --ring:#e5e7eb;
-  --shadow: 0 10px 30px rgba(0,0,0,.08);
-  --radius-lg: 16px;
-  --radius-md: 12px;
+
+  --r-lg:16px;
+  --r-md:12px;
 }
 
-*{box-sizing:border-box}
-html,body,#root{height:100%}
-body{margin:0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--ink); background:var(--surface-2);}
-
-.app-root{min-height:100%; display:flex; flex-direction:column;}
-
-.page-loading{display:grid; place-items:center; min-height:60vh; font-size:18px; color:var(--muted);}
+/* ---------- Base ---------- */
+*{ box-sizing:border-box }
+html,body,#root{ height:100% }
+body{
+  margin:0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color:var(--ink);
+  background:var(--bg);
+}
+.page-loading{
+  display:grid; place-items:center; min-height:60vh;
+  font-size:18px; color:var(--muted);
+}
 
 /* ---------- HERO ---------- */
 .app-hero{
-  position:relative;
-  background: radial-gradient(1200px 500px at 15% 0%, rgba(255,255,255,.18), transparent 60%),
-              linear-gradient(120deg, var(--grad-start) 0%, var(--grad-mid) 45%, var(--grad-end) 100%);
-  color:#fff;
-  padding-bottom:64px;
+  position:relative; color:#fff;
+  background:
+    radial-gradient(1200px 500px at 15% 0%, rgba(255,255,255,.18), transparent 60%),
+    linear-gradient(120deg, var(--grad-start) 0%, var(--grad-mid) 45%, var(--grad-end) 100%);
+  padding-bottom:96px;
 }
-
 .nav{
   max-width:1200px; margin:0 auto;
   display:flex; align-items:center; justify-content:space-between;
-  padding:20px 20px 0 20px;
+  padding:20px 20px 0;
 }
-.brand{display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.2px;}
-.logo-dot{width:12px; height:12px; border-radius:999px; background:#fff; box-shadow:0 0 0 4px rgba(255,255,255,.25);}
-.nav-actions{display:flex; align-items:center; gap:10px;}
-
-.hero-content{
-  max-width:1200px; margin:28px auto 0; padding:0 20px;
+.brand{ display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.2px; }
+.brand-logo{
+  width:40px;  object-fit:cover;
+  border-radius:10px; background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 6px 16px rgba(0,0,0,.25);
 }
-.tagline{opacity:.95; margin:0 0 6px; font-weight:500;}
-.hero-title{margin:0; font-size: clamp(28px, 4vw, 40px); font-weight:800;}
-.hero-sub{margin:10px 0 0; opacity:.9; font-size:16px;}
+.hero-content{ max-width:1200px; margin:28px auto 0; padding:0 20px; }
+.tagline{ opacity:.95; margin:0 0 6px; font-weight:500; }
+.hero-title{ margin:0; font-size:clamp(28px,4vw,40px); font-weight:800; }
+.hero-sub{ margin:10px 0 0; opacity:.9; font-size:16px; max-width:780px; }
 
 .hero-wave{
-  display:block; width:100%; height:80px; margin-top:32px; fill:#fff; opacity:.9;
+  position:absolute; left:0; bottom:-2px;
+  width:100%; height:120px; display:block;
+  fill:#fff; opacity:.95; margin:0;
 }
 
-/* ---------- MAIN LAYOUT ---------- */
+/* Pull cards slightly under the wave for a seamless join */
 .container{
-  max-width:1200px; margin: 0 auto; padding: 24px 20px 40px;
+  max-width:1200px; margin:-56px auto 40px; padding:0 20px;
   display:grid; grid-template-columns: 1.6fr .9fr; gap:24px;
+  position:relative; z-index:2;
 }
-@media (max-width: 1020px){
-  .container{ grid-template-columns: 1fr; }
-}
+@media (max-width:1020px){ .container{ grid-template-columns:1fr; margin-top:-42px; } }
 
-/* ---------- CARDS ---------- */
-.card{
-  background:var(--surface); border:1px solid var(--ring);
-  border-radius: var(--radius-lg); box-shadow: var(--shadow);
-  overflow:hidden;
-}
-.card-head{padding:18px 18px 0;}
-.card-head h2{margin:0; font-size:20px;}
-.card-head .muted{margin:6px 0 0; color:var(--muted); font-size:14px;}
-.card-body{padding:6px 18px 18px;}
-
-/* Let FoodGPT breathe inside the card */
-.recipe-card .card-body > div{ margin-left:0 !important; }
-
-/* ---------- HISTORY ---------- */
-.history-card{align-self:start;}
-.empty{display:grid; place-items:center; padding:28px; color:var(--muted);}
-.empty-emoji{font-size:28px; margin-bottom:6px;}
-
-.history-list{list-style:none; margin:0; padding:10px 14px 18px;}
-.history-item{
-  padding:14px; border:1px solid var(--ring); border-radius: var(--radius-md); background:#fff; margin-bottom:10px;
-}
-.hist-row{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px;}
-.chip{
-  background:#eef2ff; border:1px solid #e5e7eb; color:#3730a3;
-  padding:4px 8px; border-radius:999px; font-size:12px; font-weight:600;
-}
-.hist-text{
-  margin:0; color:#111; font-size:14px; line-height:1.6;
-  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
-}
-
-.hist-time{
-  margin-left:auto; font-size:12px; color:var(--muted); white-space:nowrap;
-}
-/* ---------- BUTTONS ---------- */
-.btn{appearance:none; border:0; cursor:pointer; font-weight:600;}
+/* ---------- Buttons ---------- */
+.btn{ appearance:none; border:0; cursor:pointer; font-weight:700; }
 .btn-ghost{
   color:#fff; background:rgba(255,255,255,.14);
-  border:1px solid rgba(255,255,255,.25); padding:8px 14px; border-radius:10px;
-  transition: all .2s ease;
+  border:1px solid rgba(255,255,255,.25);
+  padding:8px 14px; border-radius:10px; transition:.2s;
 }
-.btn-ghost:hover{ background:rgba(255,255,255,.22); transform: translateY(-1px); }
+.btn-ghost:hover{ background:rgba(255,255,255,.22); transform:translateY(-1px); }
 
-/* ---------- FOOTER ---------- */
+/* ---------- Cards ---------- */
+.card{
+  background: var(--surface);
+  border: 1px solid var(--ring);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+/* Remove the thin outline on white cards */
+.card,
+.rp-card {
+  border: 0 !important;           /* nuke the line */
+  background-clip: padding-box;   /* avoids anti-alias “seam” on some browsers */
+}
+
+/* If you only want to remove the TOP edge (keep sides/bottom), use this instead: */
+.card,
+.rp-card {
+  border-top: 0 !important;
+  /* keep the rest if you like */
+}
+
+/* If you see the seam where the hero wave meets the cards, keep these too */
+.hero-wave { bottom: -1px; }       /* tucks the svg edge under */
+.container { margin-top: -56px; }  /* lets cards overlap the wave slightly */
+
+/* Header area inside cards */
+.card-head{ 
+  padding: 18px 18px 10px;         /* keep spacing */
+  /* no border here by default – we'll add it only where we want it */
+}.card-head h2{ margin:0; font-size:22px; font-weight:800; }
+.card-head .muted{ margin:6px 0 0; color:var(--muted); font-size:14px; }
+.card-body{ padding:16px 18px 18px; }
+.card-head:empty{
+  display: none;
+  border: 0;
+  padding: 0;
+}
+
+.recipe-card .card-body > div{ margin-left:0 !important; } /* lets FoodGPT breathe */
+
+/* ---------- Recent Recipes (full-card link) ---------- */
+.history-card .card-head{
+  border-bottom: 1px solid var(--ring);
+}.history-list{ list-style:none; padding:0; margin:0; }
+.history-li{ margin:0 0 14px; }
+
+/* The whole card is a link */
+.history-item{
+  position:relative;
+  display:grid;
+  grid-template-columns: 1fr auto;   /* content | arrow */
+  gap:8px 12px;
+  align-items:start;
+
+  text-decoration:none; color:inherit;
+
+  background:#fff;
+  border:1px solid var(--ring);
+  border-radius:14px;
+  padding:14px 14px 12px;
+  transition:transform .08s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.history-item:hover{
+  transform:translateY(-1px);
+  border-color:#dbe1ea;
+  box-shadow:0 10px 24px rgba(17,24,39,.10);
+}
+
+/* timestamp (top-left) */
+.hist-time{
+  grid-column:1 / -1;
+  font-size:12px; color:#8b95a2; letter-spacing:.2px;
+  margin-bottom:-2px;
+}
+
+/* title */
+.hist-title{
+  grid-column:1 / -1;
+  margin:0;
+  font-weight:800;
+  font-size:18px;
+  color:#0f172a;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+
+/* chips row */
+.hist-row{
+  grid-column:1 / -1;
+  display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 2px;
+}
+.chip{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#eef2ff;
+  border:1px solid #e5e7eb;
+  color:#3730a3;
+  font-size:12px; font-weight:700;
+}
+
+/* arrow */
+.hist-go{
+  align-self:center;
+  justify-self:end;
+  color:#9aa3b2;
+  font-weight:800;
+  font-size:18px;
+}
+
+/* focus ring for keyboard users */
+.history-item:focus-visible{
+  outline:3px solid #c7d2fe;        /* indigo-200 */
+  outline-offset:2px;
+}
+
+/* ---------- Footer ---------- */
 .footer{
   margin-top:auto; padding:18px; text-align:center; color:var(--muted);
 }
-.footer .sep{margin:0 6px;}
-/* HERO: lock the wave to the bottom and pull the cards up */
-.app-hero{
-  position: relative;
-  padding-bottom: 96px; /* gives room for the wave that sits absolutely */
-}
-
-.hero-wave{
-  position: absolute;
-  left: 0;
-  bottom: -2px;   /* hide any anti-aliased seam */
-  width: 100%;
-  height: 120px;
-  margin: 0;      /* remove extra space that created the gap */
-  display: block;
-  fill: #fff;
-  opacity: .95;
-}
-
-/* Let main content slightly overlap the hero so there's no gap */
-.container{
-  margin-top: -56px;   /* tuck cards under the wave */
-  position: relative;
-  z-index: 2;
-}
-/* ---- Recipe page layout ---- */
-.recipe-shell{
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 24px 20px 60px;
-}
-
-.link-back{
-  background: none;
-  border: 0;
-  color: #374151;
-  font-weight: 600;
-  cursor: pointer;
-  margin-bottom: 8px;
-}
-.link-back:hover{ text-decoration: underline; }
-
-.recipe-title{
-  font-size: clamp(28px, 3.2vw, 42px);
-  line-height: 1.15;
-  font-weight: 800;
-  margin: 6px 0 8px;
-  color: #0f172a;
-}
-
-.meta-row{
-  display: flex; gap: 10px; flex-wrap: wrap;
-  margin-bottom: 18px;
-}
-.chip{
-  background: #f1f5f9;
-  color: #0f172a;
-  border: 1px solid #e5e7eb;
-  border-radius: 9999px;
-  padding: 6px 10px;
-  font: 600 13px/1 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-}
-
-/* two-column layout that collapses on mobile */
-.recipe-grid{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-@media (max-width: 980px){
-  .recipe-grid{ grid-template-columns: 1fr; }
-}
-
-.section-title{
-  font-weight: 800;
-  font-size: 22px;
-  margin: 14px 0 10px;
-  color: #0f172a;
-}
-/* ===== Recipe page polish ===== */
-:root{
-  --rp-surface:#ffffff;
-  --rp-bg:#f5f6fb;
-  --rp-ring:#e9ecf2;
-  --rp-ink:#0f1115;
-  --rp-muted:#6b7280;
-  --rp-grad1:#8a36d1;
-  --rp-grad2:#6b47ff;
-  --rp-grad3:#4e60ff;
-  --rp-shadow: 0 20px 50px rgba(0,0,0,.10);
-  --rp-r-lg:16px;
-  --rp-r-md:12px;
-}
-
-.rp-root{background:var(--rp-bg); min-height:100dvh;}
-
-/* hero */
-.rp-hero{
-  position:relative; color:#fff;
-  background:
-    radial-gradient(900px 400px at 15% 0%, rgba(255,255,255,.18), transparent 60%),
-    linear-gradient(120deg, var(--rp-grad1) 0%, var(--rp-grad2) 45%, var(--rp-grad3) 100%);
-  /* more bottom room so the wave doesn’t cover the cards */
-  padding: 26px 0 140px;              /* was 120px */
-  border-bottom-left-radius:32px; border-bottom-right-radius:32px;
-  z-index: 1;                         /* sits under main content */
-}
-
-.rp-hero-inner{max-width:1200px; margin:0 auto; padding:0 20px;}
-.rp-back{
-  background:none; border:0; color:#fff; opacity:.95; cursor:pointer;
-  font-size:14px; margin-bottom:8px;
-}
-.rp-title{margin:4px 0 6px; font-weight:800; font-size: clamp(28px, 5vw, 44px);}
-.rp-sub{margin:10px 0 0; opacity:.92; max-width:760px}
-.rp-wave{
-  position:absolute; left:0; bottom:-1px; /* was -2px */
-  width:100%; height:96px; fill:var(--rp-bg); opacity:.96;
-  z-index: 1;
-}
-
-/* main grid */
-.rp-main{
-  max-width:1200px;
-  /* remove big negative top margin so content doesn’t overlap the wave */
-  margin: 0 auto 56px;                /* was -64px auto 48px */
-  padding:0 20px;
-  display:grid; gap:28px; grid-template-columns: minmax(280px, 1fr) 1.3fr;
-  position: relative;                 /* render above the wave */
-  z-index: 2;
-}
-
-@media (max-width: 980px){
-  .rp-main{
-    grid-template-columns: 1fr;
-    margin: 0 auto 44px;              /* was -48px */
-  }
-}
-
-/* cards */
-.rp-card{
-  background:var(--rp-surface);
-  border:1px solid var(--rp-ring);
-  border-radius: var(--rp-r-lg);
-  box-shadow: var(--rp-shadow);
-  padding:20px 20px 22px;
-}
-.rp-h2{margin:0 0 12px; font: 800 22px/1.2 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--rp-ink);}
-
-/* ingredients — two columns w/ subtle bullets */
-.rp-ingredients{
-  list-style:none; margin:0; padding:0;
-  columns: 2; column-gap: 24px;
-}
-@media (max-width:700px){ .rp-ingredients{ columns:1; } }
-.rp-ingredients li{
-  break-inside: avoid; position: relative;
-  padding-left: 16px; margin: 6px 0; color:#151823; font: 400 16px/1.7 Inter, sans-serif;
-}
-.rp-ingredients li::before{
-  content:""; position:absolute; left:0; top:0.82em; transform:translateY(-50%);
-  width:7px; height:7px; border-radius:2px; background:#FFC94D; outline:2px solid rgba(255,201,77,.25);
-}
-
-/* steps */
-.rp-steps{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px; }
-.rp-step{
-  display:flex; gap:12px; align-items:flex-start;
-  background:#fff; border:1px solid #cfd7e4; border-radius:12px; padding:14px 16px;
-  transition: box-shadow .15s ease, transform .12s ease, border-color .15s ease;
-}
-.rp-step:hover{ box-shadow:0 10px 22px rgba(32,62,122,.12); border-color:#b8c6dd; transform: translateY(-1px); }
-.rp-badge{
-  width:34px; height:34px; border-radius:999px;
-  background: linear-gradient(135deg, #2573ff, #3b82f6);
-  color:#fff; display:grid; place-items:center; font-weight:800; font-size:16px;
-  box-shadow: 0 6px 16px rgba(59,130,246,.35);
-  font-variant-numeric: tabular-nums;
-}
-.rp-step-body{display:flex; flex-direction:column; gap:4px;}
-.rp-step-text{ color:#12151c; font: 500 16px/1.65 Inter, sans-serif; }
-.rp-step-time{ color:#52607a; font: 400 13px/1.4 Inter, sans-serif; }
-
-/* Header brand */
-.brand { display: flex; align-items: center; }
-.brand-link {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  color: #fff;            /* keep the title white on the gradient */
-}
-.brand-logo {
-  width: 50px;
-  object-fit: cover;      /* contain/cover depending on your logo shape */
-  border-radius: 10px;    /* soften corners; set to 50% if your logo is circular */
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.18);
-  box-shadow: 0 6px 16px rgba(0,0,0,.25);
-}
-
-@media (max-width: 640px) {
-  .brand-logo { width: 30px; height:30px;}
-}
+.footer .sep{ margin:0 6px; }
