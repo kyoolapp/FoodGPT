@@ -429,3 +429,58 @@
   position: relative;
   z-index: 2;
 }
+/* ===============================
+   MOBILE FIXES (≤ 780px)
+   =============================== */
+@media (max-width: 780px){
+
+  /* Stack instructions over the actions card; disable sticky */
+  .rp-instructions-wrap{
+    grid-template-columns: 1fr !important;
+  }
+  .rp-actions-sidebar{
+    position: static !important;
+    top: auto !important;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  /* Make each step a compact 2-column grid; put the button UNDER the text */
+  .rp-steps{ gap: 10px; }
+  .rp-step{
+    display: grid !important;
+    grid-template-columns: 34px 1fr;   /* badge | content */
+    grid-auto-rows: auto;
+    align-items: start;
+    gap: 10px;
+    padding: 12px 12px;
+    width: 100%;
+  }
+
+  .rp-badge{
+    grid-column: 1; grid-row: 1;
+    width: 28px; height: 28px; font-size: 13px; margin-top: 2px;
+  }
+
+  .rp-step-body{
+    grid-column: 2; grid-row: 1;
+  }
+
+  .rp-step-text{
+    font-size: 15px; line-height: 1.5;
+    word-break: break-word;            /* prevent overflow */
+  }
+
+  /* Move the "Done" button below the text, aligned with content */
+  .rp-step-toggle{
+    grid-column: 2; grid-row: 2;
+    margin: 6px 0 0 0;
+    width: auto;                        /* no squeezing */
+  }
+
+  /* Progress chip spacing */
+  .rp-card--instructions .rp-card-head{
+    gap: 8px;
+  }
+  .rp-slim-progress{ max-width: 100%; }
+}
