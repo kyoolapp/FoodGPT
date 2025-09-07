@@ -1,4 +1,3 @@
-// App.js
 import './App.css';
 import axios from 'axios';
 import React, { useEffect, useState, useCallback } from 'react';
@@ -7,46 +6,65 @@ import FoodGPT from './components/FoodGPT';
 import RecipePage from './components/RecipePage';
 import Login from './components/Login';
 import Signup from './components/Signup';
+import HistoryPage from './components/HistoryPage';
 import { auth } from './firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 const MAX_HOME_RECIPES = 3;
 
 /* ---------- Helpers to persist and normalize user selections ---------- */
-// We store selections per-recipe-id so they survive API fetches that don't include them.
 const selKey = (id) => `kyool:selections:${id}`;
 
-// Normalize possible field names into a consistent shape.
+const storage = {
+  get(k) {
+    try {
+      const fromLocal = localStorage.getItem(k);
+      if (fromLocal != null) return fromLocal;
+      return sessionStorage.getItem(k);
+    } catch {
+      try { return sessionStorage.getItem(k); } catch { return null; }
+    }
+  },
+  set(k, v) {
+    try { localStorage.setItem(k, v); }
+    catch {
+      try { sessionStorage.setItem(k, v); } catch {}
+    }
+  }
+};
+
 function normalizeSelections(obj = {}) {
-  // Prefer explicit "selected_*" fields; fallback to common API names.
   const selected_time =
-    obj.selected_time ??
-    obj.time_option ??
-    obj.cook_time ??
-    null;
+    obj.selected_time ?? obj.time_option ?? obj.cook_time ?? null;
 
   const selected_servings =
-    obj.selected_servings ??
-    obj.serving ??
-    obj.servings ??
-    null;
+    obj.selected_servings ?? obj.serving ?? obj.servings ?? null;
 
-  // Return both the selected_* and the API-friendly aliases so either consumer can use them.
+  const selected_calories =
+    obj.selected_calories ?? obj.estimated_calories ?? obj.calories ?? null;
+
   const normalized = {};
   if (selected_time != null) {
     normalized.selected_time = selected_time;
-    normalized.time_option = selected_time; // alias for RecipePage
+    normalized.time_option = selected_time;
   }
   if (selected_servings != null) {
     normalized.selected_servings = selected_servings;
-    normalized.serving = selected_servings; // alias for RecipePage
+    normalized.serving = selected_servings;
+    normalized.servings = selected_servings;
+  }
+  if (selected_calories != null) {
+    normalized.selected_calories = selected_calories;
+    normalized.estimated_calories = selected_calories;
+    normalized.calories = selected_calories;
   }
   return normalized;
 }
 
 function readSelections(id) {
+  if (!id) return {};
   try {
-    const raw = sessionStorage.getItem(selKey(id));
+    const raw = storage.get(selKey(id));
     return raw ? JSON.parse(raw) : {};
   } catch {
     return {};
@@ -57,13 +75,10 @@ function writeSelections(id, obj) {
   if (!id) return;
   const normalized = normalizeSelections(obj);
   try {
-    // Merge with anything already saved so we don't lose fields
     const prev = readSelections(id);
     const next = { ...prev, ...normalized };
-    sessionStorage.setItem(selKey(id), JSON.stringify(next));
-  } catch {
-    // ignore storage errors
-  }
+    storage.set(selKey(id), JSON.stringify(next));
+  } catch {}
 }
 
 /* ---------- Home Screen ---------- */
@@ -96,15 +111,20 @@ function HomeScreen({ displayName, history, onAddHistory }) {
         <section className="card recipe-card">
           <div className="card-head"></div>
           <div className="card-body">
-            {/* pass the callback down */}
             <FoodGPT userName={displayName} onNewRecipe={onAddHistory} />
           </div>
         </section>
 
         <aside className="card history-card">
-          <div className="card-head">
-            <h2>Recent Recipes</h2>
-            <p className="muted">Your last few creations, at a glance.</p>
+          {/* Header now has "View all" on the right */}
+          <div className="card-head history-card-head">
+            <div>
+              <h2>Recent Recipes</h2>
+              <p className="muted">Your last few creations, at a glance.</p>
+            </div>
+            <Link to="/history" className="btn btn-sm" aria-label="View all recipes">
+              View all
+            </Link>
           </div>
 
           {history.length === 0 ? (
@@ -116,7 +136,6 @@ function HomeScreen({ displayName, history, onAddHistory }) {
             <>
               <ul className="history-list">
                 {history.slice(0, MAX_HOME_RECIPES).map((item) => {
-                  // Enrich the item with any saved selections + normalized aliases
                   const saved = readSelections(item.id);
                   const normalized = normalizeSelections(item);
                   const enriched = { ...item, ...saved, ...normalized };
@@ -125,7 +144,6 @@ function HomeScreen({ displayName, history, onAddHistory }) {
                     <li key={item.id} className="history-li">
                       <Link
                         to={`/recipe/${item.id}`}
-                        /* Pass the enriched recipe so RecipePage can always show selected time/servings */
                         state={{ recipe: enriched }}
                         className="history-item"
                         aria-label={`Open recipe: ${item.recipe_name || 'Recipe'}`}
@@ -143,6 +161,7 @@ function HomeScreen({ displayName, history, onAddHistory }) {
                   );
                 })}
               </ul>
+              {/* removed bottom "View all" button */}
             </>
           )}
         </aside>
@@ -175,7 +194,6 @@ export default function App() {
           );
           const serverHistory = res.data.history || [];
 
-          // Rehydrate each item with any saved selections + normalized aliases
           const hydrated = serverHistory.map((it) => {
             const saved = readSelections(it.id);
             const normalized = normalizeSelections(it);
@@ -192,16 +210,10 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  // Accept a freshly generated recipe and prepend it to the list
   const handleAddHistory = useCallback((item) => {
-    // Persist the selections immediately so they'll be available later
     if (item?.id) writeSelections(item.id, item);
-
-    // Also enrich the item we insert into local state
     const enriched = { ...item, ...normalizeSelections(item), ...readSelections(item.id) };
-
     setHistory((prev) => {
-      // avoid dupes by id if server later returns the same id
       if (prev.some((x) => x.id === enriched.id)) return prev;
       return [enriched, ...prev];
     });
@@ -219,7 +231,8 @@ export default function App() {
         path="/"
         element={<HomeScreen displayName={displayName} history={history} onAddHistory={handleAddHistory} />}
       />
-      <Route path="/recipe/:id" element={<RecipePage />} /> {/* Use :id param */}
+      <Route path="/history" element={<HistoryPage history={history} />} />
+      <Route path="/recipe/:id" element={<RecipePage />} />
     </Routes>
   );
 }

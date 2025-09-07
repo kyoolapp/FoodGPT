@@ -22,7 +22,7 @@ export default function RecipePage() {
       .then((res) => {
         if (!alive) return;
         // IMPORTANT: state/prev (user selections) override API
-        setRecipe((prev) => ({ ...(res.data || {}), ...(prev || {}) }));
+        setRecipe((prev) => ({ ...(res.data || {}), ...(prev || {}) })); 
       })
       .catch((err) => console.error("Error fetching recipe:", err))
       .finally(() => alive && setLoading(false));
@@ -58,7 +58,7 @@ export default function RecipePage() {
   useEffect(() => {
     if (prevCompletion.current < 100 && completion === 100) {
       setBurst(true);
-      const t = setTimeout(() => setBurst(false), 1200);
+      const t = setTimeout(() => setBurst(false), 1500);
       return () => clearTimeout(t);
     }
     prevCompletion.current = completion;
@@ -82,18 +82,27 @@ export default function RecipePage() {
     try { sessionStorage.setItem(ratingKey, String(n)); } catch {}
   };
 
-  // ---------- Share ----------
-  const [shareOpen, setShareOpen] = useState(false);
-  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+  // ---------- Share (same behavior as History page) ----------
   const [copied, setCopied] = useState(false);
-  const copyToClipboard = async () => {
-    try { await navigator.clipboard.writeText(shareUrl); setCopied(true); setTimeout(() => setCopied(false), 1000); }
-    catch (e) { console.error("Copy failed", e); }
+  const pageUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/recipe/${id}`
+      : "";
+
+  const handleShare = async () => {
+    const title = recipe?.recipe_name || "Recipe";
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, url: pageUrl });
+      } else {
+        await navigator.clipboard?.writeText(pageUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1200);
+      }
+    } catch {
+      // user canceled
+    }
   };
-  const openWhatsApp = () =>
-    window.open(`https://wa.me/?text=${encodeURIComponent(shareUrl)}`, "_blank", "noopener,noreferrer");
-  const openFacebook = () =>
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, "_blank", "noopener,noreferrer");
 
   // ---------- Normalize + prefer user selections for hero chips ----------
   const recipe_name = recipe?.recipe_name || "Recipe";
@@ -116,9 +125,43 @@ export default function RecipePage() {
     null;
 
   const displayCalories =
-    recipe?.estimated_calories ?? recipe?.calories ?? null;
+    state?.recipe?.estimated_calories ??
+    state?.recipe?.selected_calories ??
+    recipe?.estimated_calories ??
+    recipe?.calories ??
+    null;
 
   const displayDifficulty = state?.recipe?.difficulty ?? recipe?.difficulty ?? null;
+
+  // ---------- Persist selected time/servings/calories so they survive relaunch ----------
+  useEffect(() => {
+    if (!id) return;
+    try {
+      const key = `kyool:selections:${id}`;
+      const prev = JSON.parse(localStorage.getItem(key) || "{}");
+      const payload = {};
+
+      if (displayTime != null) {
+        payload.selected_time = displayTime;
+        payload.time_option = displayTime;
+      }
+      if (displayServings != null) {
+        payload.selected_servings = displayServings;
+        payload.serving = displayServings;
+        payload.servings = displayServings;
+      }
+      if (displayCalories != null) {
+        payload.selected_calories = displayCalories;
+        payload.estimated_calories = displayCalories;
+        payload.calories = displayCalories;
+      }
+
+      const next = { ...prev, ...payload };
+      localStorage.setItem(key, JSON.stringify(next));
+    } catch {
+      /* ignore */
+    }
+  }, [id, displayTime, displayServings, displayCalories]);
 
   return (
     <div className="rp-root">
@@ -288,41 +331,35 @@ export default function RecipePage() {
               </div>
 
               {/* Share */}
-              <button className="rp-share-btn" type="button" onClick={() => setShareOpen(true)}>
-                Share
+              <button className="rp-share-btn" type="button" onClick={handleShare}>
+                <span aria-hidden>🔗</span> Share
               </button>
+              {copied && <div className="rp-share-hint">Link copied!</div>}
             </div>
           </aside>
         </div>
       </main>
 
-      {/* Share Modal */}
-      {shareOpen && (
-        <div className="rp-share-overlay" role="dialog" aria-modal="true" aria-label="Share">
-          <div className="rp-share">
-            <div className="rp-share-head">
-              <div className="rp-share-title">Share {recipe_name}</div>
-              <button className="rp-share-close" onClick={() => setShareOpen(false)} aria-label="Close" type="button">×</button>
-            </div>
-
-            <div className="rp-share-row">
-              <input className="rp-share-input" value={shareUrl} readOnly />
-              <button className="rp-copy" onClick={copyToClipboard} type="button">{copied ? "Copied" : "Copy"}</button>
-            </div>
-
-            <div className="rp-share-buttons">
-              <button className="rp-share-pill rp-share-pill--wa" onClick={openWhatsApp} type="button">WhatsApp</button>
-              <button className="rp-share-pill rp-share-pill--fb" onClick={openFacebook} type="button">Facebook</button>
-              <a className="rp-share-pill rp-share-pill--url" href={shareUrl} target="_blank" rel="noopener noreferrer">Open URL</a>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Confetti */}
+      {/* Confetti — multiple icons */}
       {burst && (
         <div className="rp-burst" aria-hidden="true">
-          {Array.from({ length: 16 }).map((_, i) => <span key={i}>🎉</span>)}
+          {Array.from({ length: 50 }).map((_, i) => {
+            const icons = ["🎉", "🎊", "✨", "💫", "🌟", "🥳", "🍾", "🎶"];
+            const icon = icons[Math.floor(Math.random() * icons.length)];
+            return (
+              <span
+                key={i}
+                className="burst-icon"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  animationDelay: `${Math.random() * 0.4}s`,
+                  fontSize: `${Math.random() * 12 + 16}px`,
+                }}
+              >
+                {icon}
+              </span>
+            );
+          })}
         </div>
       )}
     </div>
