@@ -341,27 +341,33 @@ export default function RecipePage() {
       </main>
 
       {/* Confetti — multiple icons */}
-      {burst && (
-        <div className="rp-burst" aria-hidden="true">
-          {Array.from({ length: 50 }).map((_, i) => {
-            const icons = ["🎉", "🎊", "✨", "💫", "🌟", "🥳", "🍾", "🎶"];
-            const icon = icons[Math.floor(Math.random() * icons.length)];
-            return (
-              <span
-                key={i}
-                className="burst-icon"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 0.4}s`,
-                  fontSize: `${Math.random() * 12 + 16}px`,
-                }}
-              >
-                {icon}
-              </span>
-            );
-          })}
-        </div>
-      )}
+{/* Confetti – radial */}
+{burst && (
+  <div className="rp-burst--radial" aria-hidden="true">
+    {Array.from({ length:48 }).map((_, i) => {
+      const icons = ["🎉","🎊","✨","💫","🌟","🥳","🍾","🎶"];
+      const icon = icons[Math.floor(Math.random()*icons.length)];
+      const angle = Math.random()*360;
+      const dist  = 140 + Math.random()*180;      // px
+      const dx    = Math.cos(angle*Math.PI/180)*dist;
+      const dy    = Math.sin(angle*Math.PI/180)*dist;
+      return (
+        <span
+          key={i}
+          className="burst-icon"
+          style={{
+            "--dx": `${dx}px`,
+            "--dy": `${dy}px`,
+            "--dur": `${0.9 + Math.random()*0.5}s`,
+            "--delay": `${Math.random()*0.2}s`,
+            fontSize: `${16 + Math.random()*12}px`
+          }}
+        >{icon}</span>
+      );
+    })}
+  </div>
+)}
+
     </div>
   );
 }
