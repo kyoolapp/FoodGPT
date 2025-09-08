@@ -85,10 +85,15 @@ export default function HistoryPage({ history }) {
       return name.includes(t) || ings.includes(t);
     });
 
+    const toTs = (v) => {
+      const d = toDateSafe(v);
+      return d ? d.getTime() : 0;
+    };
+
     return [...byQuery].sort((a, b) => {
       if (sortBy === "name") return (a.recipe_name || "").localeCompare(b.recipe_name || "");
-      const ta = Date.parse(a.times || "") || 0;
-      const tb = Date.parse(b.times || "") || 0;
+      const ta = toTs(a.times);
+      const tb = toTs(b.times);
       return tb - ta; // newest first
     });
   }, [enriched, q, sortBy]);
@@ -110,12 +115,25 @@ export default function HistoryPage({ history }) {
     try {
       if (navigator.share) {
         await navigator.share({ title, url });
-      } else {
-        await navigator.clipboard?.writeText(url);
+      } else if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
         alert("Link copied to clipboard");
+      } else {
+        // Very old browsers: fallback to prompt
+        window.prompt("Copy this link:", url);
       }
     } catch {
       /* user canceled */
+    }
+  };
+
+  const openRecipe = (item) =>
+    navigate(`/recipe/${item.id}`, { state: { recipe: item } });
+
+  const onCardKeyDown = (e, item) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openRecipe(item);
     }
   };
 
@@ -149,7 +167,7 @@ export default function HistoryPage({ history }) {
       <main className="history-wrap">
         <div className="history-controls card">
           <div className="hc-left">
-            <button className="pill pill-active">List View</button>
+            <button className="pill pill-active" type="button">List View</button>
           </div>
           <div className="hc-right">
             <input
@@ -195,7 +213,8 @@ export default function HistoryPage({ history }) {
                       <div className="gi-inner">
                         <div
                           className="gi-main"
-                          onClick={() => navigate(`/recipe/${item.id}`, { state: { recipe: item } })}
+                          onClick={() => openRecipe(item)}
+                          onKeyDown={(e) => onCardKeyDown(e, item)}
                           role="button"
                           tabIndex={0}
                         >
@@ -217,7 +236,7 @@ export default function HistoryPage({ history }) {
 
                         <div className="gi-right">
                           <span className="gi-time">{fmtTimeLocal(item.times)}</span>
-                          <button className="link-btn" onClick={() => navigate(`/recipe/${item.id}`, { state: { recipe: item } })}>
+                          <button className="link-btn" onClick={() => openRecipe(item)}>
                             <span aria-hidden>🍽️</span> View Recipe
                           </button>
                           <button className="link-btn" onClick={() => onShare(item)}>
