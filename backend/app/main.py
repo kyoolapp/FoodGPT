@@ -46,25 +46,32 @@ async def generate_recipe(request: Request):
         dish_name = data.get("dish_name")
         if not dish_name: return {"error": "No dish name provided."}
         prompt = (
-            f"You are a professional cookbook author. Suggest a healthy, complete recipe for the dish: {dish_name}. The instructions must be detailed and accurate, along with the time it will take for the recipe to be cooked. It is always for 1 serving."
-            "Use U.S. kitchen units by default (tbsp, tsp, cups, oz) and add metric in parentheses when quantities are ≥ 100 g/ml."
-            "Return strictly numbers only for nutritional values and calories (do not include units like 'g' or 'kcal').\n\n"
+            f"You are a professional cookbook author. Suggest a healthy, complete AUTHENTIC recipe for the dish: {dish_name}. "
+            "The recipe must strictly follow traditional preparation methods used in its authentic cuisine. "
+            "Do not invent or include unrelated or unusual ingredients (for example: egg whites, coconut, lemon juice, baking soda) unless they are truly part of the authentic version of this dish. "
+            "If the dish is traditionally vegetarian or vegan, keep it that way. "
+            "Ensure the recipe contains only realistic, commonly available ingredients for this cuisine. "
+            "Instructions must be step-by-step, detailed, and accurate, with realistic preparation and cooking times. "
+            "Use U.S. kitchen units by default (tbsp, tsp, cups, oz) and add metric in parentheses when quantities are ≥ 100 g/ml. "
+            "Do not skip essential steps or shorten the process unnaturally. "
+            "Return strictly numbers only for nutritional values and calories (do not include units like 'g' or 'kcal'). "
+            "If unsure, prefer omitting an ingredient over inventing one.\n\n"
             "Return the answer strictly in this JSON format, no extra text:\n\n"
             "{\n"
-        '  "recipe_name": "<recipe name>",\n'
-        '  "serving": "<number of servings>",\n'
-        '  "time_option": "<time taken to cook the recipe>",\n'
-        '  "ingredients": ["item1", "item2", "item3"],\n'
-        '  "instructions": ["step1", "step2", "step3"],\n'
-        '  "estimated_calories": "<calories>",\n'
-        '  "nutritional_values": {\n'
-        '      "protein": "<g>",\n'
-        '      "fat": "<g>",\n'
-        '      "carbohydrates": "<g>",\n'
-        '      "sugar": "<g>",\n'
-        '      "fiber": "<g>"\n'
-        "  }\n"
-        "}\n"
+                '  "recipe_name": "string",\n'
+                '  "serving": "number",\n'
+                '  "time_option": "string",\n'
+                '  "ingredients": ["string", "string", "string"],\n'
+                '  "instructions": ["string", "string", "string"],\n'
+                '  "estimated_calories": "number",\n'
+                '  "nutritional_values": {\n'
+                '      "protein": "number",\n'
+                '      "fat": "number",\n'
+                '      "carbohydrates": "number",\n'
+                '      "sugar": "number",\n'
+                '      "fiber": "number"\n'
+            "  }\n"
+            "}\n"
         )
     else:
         if not ingredients: return {"error": "No ingredients provided."} 
@@ -98,6 +105,8 @@ async def generate_recipe(request: Request):
             json={
                 "model": "llama3.2",
                 "prompt": prompt,
+                "temperature": 0.2,
+                "top_p": 0.9,
                 "stream": False
             }
         )
