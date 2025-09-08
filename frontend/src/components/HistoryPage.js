@@ -4,6 +4,22 @@ import { Link, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 
+/* ---------- site url + slug helper ---------- */
+// Use an env var in prod; fallback to your domain
+const SITE_URL =
+  (typeof import.meta !== "undefined" && import.meta.env?.VITE_SITE_URL) || // Vite
+  process.env.REACT_APP_SITE_URL ||                                         // CRA
+  "https://www.kyoolapp.com";                                               // fallback
+
+function slugify(str = "recipe") {
+  return String(str)
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "") // strip diacritics
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 /* ---------- selection helpers (match App.js or move to utils) ---------- */
 const selKey = (id) => `kyool:selections:${id}`;
 function normalizeSelections(obj = {}) {
@@ -109,26 +125,28 @@ export default function HistoryPage({ history }) {
     return Array.from(map.entries());
   }, [filteredSorted]);
 
-const onShare = async (item) => {
-  const url = `${window.location.origin}/recipe/${item.id}`;
-  const title = item.recipe_name || "Recipe";
-  const text = `${title} – ${url}`;
+  // -------- share with slug-only url --------
+  const onShare = async (item) => {
+    const title = item.recipe_name || "Recipe";
+    const slug = item.slug || slugify(title);
+    // share a slug-only link (reader must have a slug-capable route)
+    const url = `${SITE_URL}/recipe/${slug}`;
+    const text = `${title} – ${url}`;
 
-  try {
-    if (navigator.share) {
-      await navigator.share({ title, text, url });
-    } else if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(text);
-      alert("Link copied to clipboard");
-    } else {
-      // Very old browsers: fallback to prompt
-      window.prompt("Copy this link:", text);
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, text, url });
+      } else if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        alert("Link copied to clipboard");
+      } else {
+        // Very old browsers: fallback to prompt
+        window.prompt("Copy this link:", text);
+      }
+    } catch {
+      /* user canceled */
     }
-  } catch {
-    /* user canceled */
-  }
-};
-
+  };
 
   const openRecipe = (item) =>
     navigate(`/recipe/${item.id}`, { state: { recipe: item } });
