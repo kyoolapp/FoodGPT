@@ -109,23 +109,26 @@ export default function HistoryPage({ history }) {
     return Array.from(map.entries());
   }, [filteredSorted]);
 
-  const onShare = async (item) => {
-    const url = `${window.location.origin}/recipe/${item.id}`;
-    const title = item.recipe_name || "Recipe";
-    try {
-      if (navigator.share) {
-        await navigator.share({ title, url });
-      } else if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(url);
-        alert("Link copied to clipboard");
-      } else {
-        // Very old browsers: fallback to prompt
-        window.prompt("Copy this link:", url);
-      }
-    } catch {
-      /* user canceled */
+const onShare = async (item) => {
+  const url = `${window.location.origin}/recipe/${item.id}`;
+  const title = item.recipe_name || "Recipe";
+  const text = `${title} – ${url}`;
+
+  try {
+    if (navigator.share) {
+      await navigator.share({ title, text, url });
+    } else if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      alert("Link copied to clipboard");
+    } else {
+      // Very old browsers: fallback to prompt
+      window.prompt("Copy this link:", text);
     }
-  };
+  } catch {
+    /* user canceled */
+  }
+};
+
 
   const openRecipe = (item) =>
     navigate(`/recipe/${item.id}`, { state: { recipe: item } });
