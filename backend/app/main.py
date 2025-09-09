@@ -153,7 +153,6 @@ def get_history(user_id: str):
         db.collection("user-foodgpt") \
         .order_by("times",direction=firestore.Query.DESCENDING) \
         .where("user_id", "==", user_id) \
-        .limit(3) \
         .stream()
     )
         history = []
