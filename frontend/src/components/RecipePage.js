@@ -26,9 +26,7 @@ export default function RecipePage() {
       })
       .catch((err) => console.error("Error fetching recipe:", err))
       .finally(() => alive && setLoading(false));
-    return () => {
-      alive = false;
-    };
+    return () => { alive = false; };
   }, [id]);
 
   // ---------- Persisted check-list ----------
@@ -46,9 +44,7 @@ export default function RecipePage() {
   }, [recipeKey]);
 
   useEffect(() => {
-    try {
-      sessionStorage.setItem(recipeKey, JSON.stringify(doneSteps));
-    } catch {}
+    try { sessionStorage.setItem(recipeKey, JSON.stringify(doneSteps)); } catch {}
   }, [doneSteps, recipeKey]);
 
   const [burst, setBurst] = useState(false);
@@ -83,14 +79,10 @@ export default function RecipePage() {
   }, [ratingKey]);
   const setStar = (n) => {
     setRating(n);
-    try {
-      sessionStorage.setItem(ratingKey, String(n));
-    } catch {}
+    try { sessionStorage.setItem(ratingKey, String(n)); } catch {}
   };
 
-  // ---------- Emoji Reactions (NEW) ----------
-  // Users can pick one or more quick, expressive reactions.
-  // Persisted to sessionStorage (scoped to this recipe).
+  // ---------- Emoji Reactions (Single-select + LOCK other options) ----------
   const REACTIONS = [
     { key: "delicious", emoji: "😋", label: "Delicious" },
     { key: "must_try", emoji: "🤩", label: "Must-try" },
@@ -99,44 +91,49 @@ export default function RecipePage() {
     { key: "spicy", emoji: "🌶️", label: "Spicy but good" },
   ];
   const reactionKey = useMemo(() => `${recipeKey}:reactions`, [recipeKey]);
-  const [reactions, setReactions] = useState([]);
+  const [reaction, setReaction] = useState(""); // single selected key or ""
+
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem(reactionKey);
-      setReactions(raw ? JSON.parse(raw) : []);
-    } catch {
-      setReactions([]);
-    }
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      // Back-compat for old array storage
+      if (Array.isArray(parsed)) {
+        setReaction(parsed[0] || "");
+      } else if (typeof parsed === "string") {
+        setReaction(parsed);
+      }
+    } catch { /* ignore */ }
   }, [reactionKey]);
 
-  const toggleReaction = (rKey) => {
-    setReactions((prev) => {
-      const next = prev.includes(rKey) ? prev.filter((k) => k !== rKey) : [...prev, rKey];
-      try {
-        sessionStorage.setItem(reactionKey, JSON.stringify(next));
-      } catch {}
+  // Lock behavior: if one is already selected and user clicks another, ignore.
+  const chooseReaction = (rKey) => {
+    setReaction((prev) => {
+      if (prev && prev !== rKey) {
+        // another option is already selected → ignore
+        return prev;
+      }
+      const next = prev === rKey ? "" : rKey; // toggle same one to clear
+      try { sessionStorage.setItem(reactionKey, JSON.stringify(next)); } catch {}
       return next;
     });
   };
 
-  const clearReactions = () => {
-    setReactions([]);
-    try {
-      sessionStorage.setItem(reactionKey, JSON.stringify([]));
-    } catch {}
+  const clearReaction = () => {
+    setReaction("");
+    try { sessionStorage.setItem(reactionKey, JSON.stringify("")); } catch {}
   };
 
-  // ---------- Share (same behavior as History page) ----------
+  // ---------- Share ----------
   const [copied, setCopied] = useState(false);
-  const pageUrl = typeof window !== "undefined" ? `${window.location.origin}/recipe/${id}` : "";
+  const pageUrl =
+    typeof window !== "undefined" ? `${window.location.origin}/recipe/${id}` : "";
 
   const handleShare = async () => {
     const title = recipe?.recipe_name || "Recipe";
-    // Optional: append reactions in share text if any selected
-    const selectedReactions = REACTIONS.filter((r) => reactions.includes(r.key))
-      .map((r) => `${r.emoji} ${r.label}`)
-      .join(" · ");
-    const text = selectedReactions ? `My take: ${selectedReactions}` : undefined;
+    const picked = REACTIONS.find((r) => r.key === reaction);
+    const text = picked ? `My take: ${picked.emoji} ${picked.label}` : undefined;
 
     try {
       if (navigator.share) {
@@ -156,31 +153,27 @@ export default function RecipePage() {
   const ingredients = recipe?.ingredients || [];
   const nutritional_values = recipe?.nutritional_values || {};
 
-  // Prefer selections from state.recipe; do NOT use `times` (timestamp)
   const displayTime =
     state?.recipe?.time_option ??
     state?.recipe?.selected_time ??
     recipe?.time_option ??
-    recipe?.cook_time ??
-    null;
+    recipe?.cook_time ?? null;
 
   const displayServings =
     state?.recipe?.serving ??
     state?.recipe?.selected_servings ??
     recipe?.serving ??
-    recipe?.servings ??
-    null;
+    recipe?.servings ?? null;
 
   const displayCalories =
     state?.recipe?.estimated_calories ??
     state?.recipe?.selected_calories ??
     recipe?.estimated_calories ??
-    recipe?.calories ??
-    null;
+    recipe?.calories ?? null;
 
   const displayDifficulty = state?.recipe?.difficulty ?? recipe?.difficulty ?? null;
 
-  // ---------- Persist selected time/servings/calories so they survive relaunch ----------
+  // ---------- Persist selected time/servings/calories ----------
   useEffect(() => {
     if (!id) return;
     try {
@@ -205,18 +198,14 @@ export default function RecipePage() {
 
       const next = { ...prev, ...payload };
       localStorage.setItem(key, JSON.stringify(next));
-    } catch {
-      /* ignore */
-    }
+    } catch { /* ignore */ }
   }, [id, displayTime, displayServings, displayCalories]);
 
   return (
     <div className="rp-root">
       <header className="rp-hero">
         <div className="rp-hero-inner">
-          <Link to="/" className="rp-back">
-            ← Back to home
-          </Link>
+          <Link to="/" className="rp-back">← Back to home</Link>
           <h1 className="rp-title">{recipe_name}</h1>
 
           {/* HERO STATS — show selected values, not API recalcs */}
@@ -248,14 +237,13 @@ export default function RecipePage() {
           </div>
         </div>
 
-        {/* CSS must set .rp-wave path { fill: var(--rp-bg) } */}
         <svg className="rp-wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
           <path d="M0,64L80,69.3C160,75,320,85,480,96C640,107,800,117,960,106.7C1120,96,1280,64,1360,48L1440,32L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"></path>
         </svg>
       </header>
 
       <main className="rp-main">
-        {/* Ingredients (bulleted) */}
+        {/* Ingredients */}
         <section className="rp-card rp-card--ing">
           <h2 className="rp-h2">Ingredients</h2>
           <ul className="rp-ingredients">
@@ -263,7 +251,7 @@ export default function RecipePage() {
           </ul>
         </section>
 
-        {/* Nutrition (yellow card) */}
+        {/* Nutrition */}
         <section className="rp-card rp-card--nut">
           <h2 className="rp-h2">Nutrition Facts</h2>
           <div className="rp-nut-sub">Per serving{displayServings ? ` • ${displayServings} total` : ""}</div>
@@ -288,7 +276,7 @@ export default function RecipePage() {
           </div>
         </section>
 
-        {/* Instructions + Actions (sticky) */}
+        {/* Instructions + Actions */}
         <div className="rp-instructions-wrap">
           <section className="rp-card rp-card--instructions">
             <div className="rp-card-head">
@@ -311,19 +299,13 @@ export default function RecipePage() {
                   return (
                     <li
                       key={i}
-                      className={`rp-step ${done ? "rp-step-done" : ""} ${finalCompleted ? "rp-step-final" : ""} ${
-                        isLocked ? "rp-step-locked" : ""
-                      }`}
-                      onClick={() => {
-                        if (!disabled) toggleStep(n);
-                      }}
+                      className={`rp-step ${done ? "rp-step-done" : ""} ${finalCompleted ? "rp-step-final" : ""} ${isLocked ? "rp-step-locked" : ""}`}
+                      onClick={() => { if (!disabled) toggleStep(n); }}
                       role="button"
                       aria-pressed={done}
                       aria-disabled={disabled}
                       tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (!disabled && (e.key === "Enter" || e.key === " ")) toggleStep(n);
-                      }}
+                      onKeyDown={(e) => { if (!disabled && (e.key === "Enter" || e.key === " ")) toggleStep(n); }}
                     >
                       <div className={`rp-badge ${done ? "done" : ""}`}>{done ? "✔" : n}</div>
 
@@ -334,10 +316,7 @@ export default function RecipePage() {
                       <button
                         type="button"
                         className={`rp-step-toggle ${done ? "is-done" : ""}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (!disabled) toggleStep(n);
-                        }}
+                        onClick={(e) => { e.stopPropagation(); if (!disabled) toggleStep(n); }}
                         disabled={disabled}
                         aria-pressed={done}
                       >
@@ -349,9 +328,7 @@ export default function RecipePage() {
               ) : (
                 <li className="rp-step">
                   <div className="rp-badge">—</div>
-                  <div className="rp-step-body">
-                    <div className="rp-step-text">—</div>
-                  </div>
+                  <div className="rp-step-body"><div className="rp-step-text">—</div></div>
                 </li>
               )}
             </ol>
@@ -362,42 +339,40 @@ export default function RecipePage() {
             <div className="rp-card rp-actions-sidebar" aria-label="Actions">
               <h3 className="rp-actions-title">Quick Reactions</h3>
 
-              {/* Emoji Reactions (multi-select chips) */}
-              <div className="rp-reactions" role="group" aria-label="Emoji reactions">
+              {/* Single-select radiogroup (others disabled when one picked) */}
+              <div className="rp-reactions" role="radiogroup" aria-label="Emoji reactions">
                 {REACTIONS.map((r) => {
-                  const active = reactions.includes(r.key);
+                  const active = reaction === r.key;
+                  const locked = !!reaction && !active; // another option is selected
                   return (
                     <button
                       key={r.key}
                       type="button"
-                      className={`rp-reaction ${active ? "is-active" : ""}`}
-                      onClick={() => toggleReaction(r.key)}
-                      aria-pressed={active}
+                      className={`rp-reaction ${active ? "is-active" : ""} ${locked ? "is-locked" : ""}`}
+                      onClick={() => chooseReaction(r.key)}
+                      role="radio"
+                      aria-checked={active}
+                      aria-disabled={locked}
+                      disabled={locked}
+                      tabIndex={locked ? -1 : 0}
                       title={r.label}
                     >
-                      <span className="rp-reaction-emoji" aria-hidden>
-                        {r.emoji}
-                      </span>
+                      <span className="rp-reaction-emoji" aria-hidden>{r.emoji}</span>
                       <span className="rp-reaction-label">{r.label}</span>
-                      {active && <span className="rp-reaction-check" aria-hidden>✓</span>}
                     </button>
                   );
                 })}
               </div>
 
-              {reactions.length > 0 && (
-                <button type="button" className="rp-reaction-clear" onClick={clearReactions}>
-                  Clear reactions
+              {reaction && (
+                <button type="button" className="rp-reaction-clear" onClick={clearReaction}>
+                  Clear selection
                 </button>
               )}
 
-              {/* Optional divider */}
               <div className="rp-actions-divider" />
 
               <h3 className="rp-actions-title">Share this recipe</h3>
-
-
-              {/* Share */}
               <button className="rp-share-btn" type="button" onClick={handleShare}>
                 <span aria-hidden>🔗</span> Share
               </button>
@@ -411,12 +386,12 @@ export default function RecipePage() {
       {burst && (
         <div className="rp-burst--radial" aria-hidden="true">
           {Array.from({ length: 48 }).map((_, i) => {
-            const icons = ["🎉", "🎊", "✨", "💫", "🌟", "🥳", "🍾", "🎶"];
-            const icon = icons[Math.floor(Math.random() * icons.length)];
-            const angle = Math.random() * 360;
-            const dist = 140 + Math.random() * 180; // px
-            const dx = Math.cos((angle * Math.PI) / 180) * dist;
-            const dy = Math.sin((angle * Math.PI) / 180) * dist;
+            const icons = ["🎉","🎊","✨","💫","🌟","🥳","🍾","🎶"];
+            const icon = icons[Math.floor(Math.random()*icons.length)];
+            const angle = Math.random()*360;
+            const dist  = 140 + Math.random()*180;
+            const dx    = Math.cos(angle*Math.PI/180)*dist;
+            const dy    = Math.sin(angle*Math.PI/180)*dist;
             return (
               <span
                 key={i}
@@ -424,13 +399,11 @@ export default function RecipePage() {
                 style={{
                   "--dx": `${dx}px`,
                   "--dy": `${dy}px`,
-                  "--dur": `${0.9 + Math.random() * 0.5}s`,
-                  "--delay": `${Math.random() * 0.2}s`,
-                  fontSize: `${16 + Math.random() * 12}px`,
+                  "--dur": `${0.9 + Math.random()*0.5}s`,
+                  "--delay": `${Math.random()*0.2}s`,
+                  fontSize: `${16 + Math.random()*12}px`
                 }}
-              >
-                {icon}
-              </span>
+              >{icon}</span>
             );
           })}
         </div>
