@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './FoodGPT.css';
+import INGREDIENTS from './ingredients.json'; 
 
 function normalizeIngredients(input) {
   if (!input) return [];
@@ -10,54 +11,6 @@ function normalizeIngredients(input) {
     .map(s => s.trim())
     .filter(Boolean);
 }
-
-// Local suggestion list (swap to API-backed if you prefer)
-const INGREDIENTS = [
-  // Proteins
-  'eggs','egg whites','chicken','salmon','tuna','shrimp','beef','pork','lamb',
-  'tofu','paneer','tempeh','chickpeas','black beans','kidney beans','lentils',
-  'turkey','sardines','mackerel','crab','lobster','clams','scallops',
-  // Indian Daals / Pulses
-  'toor dal','arhar dal','moong dal','moong whole','chana dal','black chana',
-  'masoor dal','whole masoor','urad dal','whole urad','moth dal','kulthi dal',
-  'rajma','lobia','kabuli chana','horse gram','green gram','yellow moong dal',
-  'split urad dal','split masoor dal','sambar dal','pigeon peas',
-  // Dairy & alternatives
-  'milk','yogurt','greek yogurt','buttermilk','cream','whipping cream',
-  'cheddar','mozzarella','feta','parmesan','gouda','brie','blue cheese',
-  'butter','ghee','margarine','coconut milk','almond milk','soy milk','oat milk',
-  // Grains & starches
-  'rice','basmati rice','brown rice','quinoa','oats','rolled oats','steel-cut oats',
-  'pasta','spaghetti','penne','macaroni','noodles','ramen','udon','soba',
-  'bread','whole wheat bread','sourdough','baguette','tortilla','pita','naan',
-  'potato','sweet potato','yam','plantain','barley','millet','couscous','bulgur',
-  // Vegetables
-  'spinach','kale','lettuce','romaine','arugula','cabbage','brussels sprouts',
-  'tomato','cherry tomato','onion','red onion','green onion','shallot','garlic',
-  'ginger','carrot','beet','cucumber','bell pepper','red pepper','green pepper','chili pepper',
-  'mushroom','portobello','shiitake','broccoli','cauliflower','zucchini','squash','eggplant',
-  'asparagus','okra','green beans','snow peas','snap peas','pumpkin','radish','turnip',
-  'celery','leek','artichoke','fennel','avocado','corn','peas',
-  // Fruits
-  'apple','banana','orange','lemon','lime','mango','pineapple','grape','strawberry',
-  'blueberry','raspberry','blackberry','peach','pear','plum','apricot','melon','watermelon',
-  'pomegranate','kiwi','papaya','coconut','date','fig','cherry',
-  // Herbs
-  'basil','cilantro','parsley','mint','curry leaves','dill','rosemary','thyme','sage',
-  'oregano','chives','bay leaf','lemongrass','tarragon',
-  // Spices
-  'cumin','turmeric','coriander','cardamom','cloves','nutmeg','cinnamon',
-  'chili powder','garam masala','paprika','smoked paprika','cayenne pepper','mustard seeds',
-  'black pepper','white pepper','salt','sea salt','saffron','fenugreek',
-  // Condiments & sauces
-  'ketchup','mustard','mayonnaise','soy sauce','fish sauce','oyster sauce','hoisin sauce',
-  'sriracha','hot sauce','bbq sauce','vinegar','balsamic vinegar','apple cider vinegar',
-  'olive oil','vegetable oil','canola oil','sesame oil','peanut butter','tahini','honey','maple syrup',
-  // Baking & pantry
-  'flour','whole wheat flour','almond flour','baking powder','baking soda',
-  'sugar','brown sugar','powdered sugar','cocoa powder','vanilla extract','yeast',
-  'cornstarch','arrowroot','gelatin','chocolate chips'
-];
 
 export default function FoodGPT({ userName, onNewRecipe }) {
   const navigate = useNavigate();
@@ -188,7 +141,7 @@ export default function FoodGPT({ userName, onNewRecipe }) {
         body.dish_name = dishName;
       }
 
-      console.log("Request body:", body);    
+      console.log("Request body:", body);
 
       const res = await axios.post('https://api.kyoolapp.com/generate-recipe/', body);
 
@@ -229,37 +182,36 @@ export default function FoodGPT({ userName, onNewRecipe }) {
     <div className="fg-wrap">
       <section className="fg-card">
         {/* Header */}
-<div className="fg-head">
-  <div className="fg-title">
-    <span className="fg-spark" aria-hidden>✨</span>
-    <span>Generate a Recipe</span>
-  </div>
-</div>
+        <div className="fg-head">
+          <div className="fg-title">
+            <span className="fg-spark" aria-hidden>✨</span>
+            <span>Generate a Recipe</span>
+          </div>
+        </div>
 
-{/* Tabs moved BELOW title */}
-<div className="fg-tabs" role="tablist" aria-label="Recipe mode">
-  <button
-    role="tab"
-    aria-selected={mode === 'ingredients'}
-    className={`fg-tab ${mode === 'ingredients' ? 'active' : ''}`}
-    onClick={() => setMode('ingredients')}
-    type="button"
-  >
-    <span className="fg-tab-icon" aria-hidden>🥗</span>
-    By Ingredients
-  </button>
-  <button
-    role="tab"
-    aria-selected={mode === 'dish'}
-    className={`fg-tab ${mode === 'dish' ? 'active' : ''}`}
-    onClick={() => setMode('dish')}
-    type="button"
-  >
-    <span className="fg-tab-icon" aria-hidden>📖</span>
-    By Dish Type
-  </button>
-</div>
-
+        {/* Tabs below title */}
+        <div className="fg-tabs" role="tablist" aria-label="Recipe mode">
+          <button
+            role="tab"
+            aria-selected={mode === 'ingredients'}
+            className={`fg-tab ${mode === 'ingredients' ? 'active' : ''}`}
+            onClick={() => setMode('ingredients')}
+            type="button"
+          >
+            <span className="fg-tab-icon" aria-hidden>🥗</span>
+            By Ingredients
+          </button>
+          <button
+            role="tab"
+            aria-selected={mode === 'dish'}
+            className={`fg-tab ${mode === 'dish' ? 'active' : ''}`}
+            onClick={() => setMode('dish')}
+            type="button"
+          >
+            <span className="fg-tab-icon" aria-hidden>📖</span>
+            By Dish Type
+          </button>
+        </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="fg-form" style={{ position: 'relative' }}>
@@ -267,117 +219,114 @@ export default function FoodGPT({ userName, onNewRecipe }) {
             {mode === 'ingredients' ? 'Enter Ingredients , choose oven, time and servings, then hit cook it' : 'Enter a Dish'}
           </label>
 
-          {/* Input only (CTA moved to bottom) */}
+          {/* Input */}
           <div className="fg-row-single">
-  <input
-    ref={inputRef}
-    type="text"
-    value={foodInput}
-    onChange={(e) => setFoodInput(e.target.value)}
-    onKeyDown={handleKeyDown}
-    placeholder={
-      mode === 'ingredients'
-        ? 'e.g. eggs, spinach, cheese, tomatoes'
-        : 'e.g. Pad Thai, Biryani, Alfredo pasta'
-    }
-    className="ingredients-input fg-input"
-    aria-autocomplete={mode === 'ingredients' ? 'list' : undefined}
-    aria-expanded={openSug}
-    aria-controls="ingredient-suggestions"
-    aria-activedescendant={openSug ? `sug-${activeIdx}` : undefined}
-  />
+            <input
+              ref={inputRef}
+              type="text"
+              value={foodInput}
+              onChange={(e) => setFoodInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={
+                mode === 'ingredients'
+                  ? 'e.g. eggs, spinach, cheese, tomatoes'
+                  : 'e.g. Pad Thai, Biryani, Alfredo pasta'
+              }
+              className="ingredients-input fg-input"
+              aria-autocomplete={mode === 'ingredients' ? 'list' : undefined}
+              aria-expanded={openSug}
+              aria-controls="ingredient-suggestions"
+              aria-activedescendant={openSug ? `sug-${activeIdx}` : undefined}
+            />
 
-  {mode === 'ingredients' && openSug && suggestions.length > 0 && (
-    <ul
-      id="ingredient-suggestions"
-      ref={sugRef}
-      role="listbox"
-      className="typeahead-menu"
-    >
-      {suggestions.map((s, i) => (
-        <li
-          key={s}
-          id={`sug-${i}`}
-          role="option"
-          aria-selected={i === activeIdx}
-          className={`typeahead-item ${i === activeIdx ? 'active' : ''}`}
-          onMouseDown={(e) => {
-            e.preventDefault();
-            acceptSuggestion(s);
-          }}
-          onMouseEnter={() => setActiveIdx(i)}
-        >
-          {s}
-        </li>
-      ))}
-    </ul>
-  )}
-</div>
-
-
-          {/* Controls row – no blue boxes, just light labels + selects */}
-          {mode === 'ingredients' && (
-          <div className="fg-controls">
-            
-            {/* Oven */}
-            <div className="fg-field fg-oven">
-              <span className="fg-ico" aria-hidden>🔥</span>
-              <span className="fg-field-label">Oven Usage</span>
-              <button
-                type="button"
-                className={`toggle-btn ${toggled ? 'toggled' : ''}`}
-                onClick={() => setToggled(!toggled)}
-                role="switch"
-                aria-checked={toggled}
-                aria-label={`Oven ${toggled ? 'on' : 'off'}`}
+            {mode === 'ingredients' && openSug && suggestions.length > 0 && (
+              <ul
+                id="ingredient-suggestions"
+                ref={sugRef}
+                role="listbox"
+                className="typeahead-menu"
               >
-                <span className="thumb" />
-              </button>
-              <span className="fg-oven-status">{toggled ? 'On' : 'Off'}</span>
-            </div>
-
-            {/* Time */}
-            <div className="fg-field">
-              <span className="fg-ico" aria-hidden>⏱️</span>
-              <span className="fg-field-label">Cooking Time</span>
-              <select
-                aria-label="Select time"
-                value={timeOption}
-                onChange={(e) => setTimeOption(e.target.value)}
-                className="fg-select"
-              >
-                <option value="" disabled>Select time</option>
-                {['5','10','15','20','25','30','40','50','60'].map(val => (
-                  <option key={val} value={val}>
-                    {val === '60' ? '1 hour' : `${val} minutes`}
-                  </option>
+                {suggestions.map((s, i) => (
+                  <li
+                    key={s}
+                    id={`sug-${i}`}
+                    role="option"
+                    aria-selected={i === activeIdx}
+                    className={`typeahead-item ${i === activeIdx ? 'active' : ''}`}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      acceptSuggestion(s);
+                    }}
+                    onMouseEnter={() => setActiveIdx(i)}
+                  >
+                    {s}
+                  </li>
                 ))}
-              </select>
-            </div>
-
-            {/* Servings */}
-            <div className="fg-field">
-              <span className="fg-ico" aria-hidden>🧑‍🍳</span>
-              <span className="fg-field-label">Servings</span>
-              <select
-                aria-label="Select servings"
-                value={serving}
-                onChange={(e) => setServing(e.target.value)}
-                className="fg-select"
-              >
-                <option value="" disabled>Select servings</option>
-                {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
-                  <option key={n} value={n}>
-                    {n} {n === 1 ? 'serving' : 'servings'}
-                  </option>
-                ))}
-              </select>
-            </div>
-
+              </ul>
+            )}
           </div>
+
+          {/* Controls row */}
+          {mode === 'ingredients' && (
+            <div className="fg-controls">
+              {/* Oven */}
+              <div className="fg-field fg-oven">
+                <span className="fg-ico" aria-hidden>🔥</span>
+                <span className="fg-field-label">Oven Usage</span>
+                <button
+                  type="button"
+                  className={`toggle-btn ${toggled ? 'toggled' : ''}`}
+                  onClick={() => setToggled(!toggled)}
+                  role="switch"
+                  aria-checked={toggled}
+                  aria-label={`Oven ${toggled ? 'on' : 'off'}`}
+                >
+                  <span className="thumb" />
+                </button>
+                <span className="fg-oven-status">{toggled ? 'On' : 'Off'}</span>
+              </div>
+
+              {/* Time */}
+              <div className="fg-field">
+                <span className="fg-ico" aria-hidden>⏱️</span>
+                <span className="fg-field-label">Cooking Time</span>
+                <select
+                  aria-label="Select time"
+                  value={timeOption}
+                  onChange={(e) => setTimeOption(e.target.value)}
+                  className="fg-select"
+                >
+                  <option value="" disabled>Select time</option>
+                  {['5','10','15','20','25','30','40','50','60'].map(val => (
+                    <option key={val} value={val}>
+                      {val === '60' ? '1 hour' : `${val} minutes`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Servings */}
+              <div className="fg-field">
+                <span className="fg-ico" aria-hidden>🧑‍🍳</span>
+                <span className="fg-field-label">Servings</span>
+                <select
+                  aria-label="Select servings"
+                  value={serving}
+                  onChange={(e) => setServing(e.target.value)}
+                  className="fg-select"
+                >
+                  <option value="" disabled>Select servings</option>
+                  {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
+                    <option key={n} value={n}>
+                      {n} {n === 1 ? 'serving' : 'servings'}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           )}
 
-          {/* Full-width CTA at the bottom */}
+          {/* CTA */}
           <div className="fg-cta-bar">
             <button type="submit" className="generate-btn fg-cta" disabled={loading}>
               <span className="fg-cta-icon" aria-hidden>🍳</span>
