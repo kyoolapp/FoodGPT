@@ -5,7 +5,7 @@ import "./RecipePage.css";
 import axios from "axios";
 
 export default function RecipePage() {
-  const { state } = useLocation();                // may contain state.recipe (user selections)
+  const { state } = useLocation(); // may contain state.recipe (user selections)
   const { id } = useParams();
 
   // Paint fast with what we have, then hydrate with API
@@ -22,11 +22,13 @@ export default function RecipePage() {
       .then((res) => {
         if (!alive) return;
         // IMPORTANT: state/prev (user selections) override API
-        setRecipe((prev) => ({ ...(res.data || {}), ...(prev || {}) })); 
+        setRecipe((prev) => ({ ...(res.data || {}), ...(prev || {}) }));
       })
       .catch((err) => console.error("Error fetching recipe:", err))
       .finally(() => alive && setLoading(false));
-    return () => { alive = false; };
+    return () => {
+      alive = false;
+    };
   }, [id]);
 
   // ---------- Persisted check-list ----------
@@ -44,7 +46,9 @@ export default function RecipePage() {
   }, [recipeKey]);
 
   useEffect(() => {
-    try { sessionStorage.setItem(recipeKey, JSON.stringify(doneSteps)); } catch {}
+    try {
+      sessionStorage.setItem(recipeKey, JSON.stringify(doneSteps));
+    } catch {}
   }, [doneSteps, recipeKey]);
 
   const [burst, setBurst] = useState(false);
@@ -69,7 +73,7 @@ export default function RecipePage() {
     setDoneSteps((p) => (p.includes(n) ? p.filter((x) => x !== n) : [...p, n]));
   };
 
-  // ---------- Rating ----------
+  // ---------- Star Rating (kept) ----------
   const ratingKey = useMemo(() => `${recipeKey}:rating`, [recipeKey]);
   const [rating, setRating] = useState(0);
   const [hoverStar, setHoverStar] = useState(0);
@@ -79,23 +83,66 @@ export default function RecipePage() {
   }, [ratingKey]);
   const setStar = (n) => {
     setRating(n);
-    try { sessionStorage.setItem(ratingKey, String(n)); } catch {}
+    try {
+      sessionStorage.setItem(ratingKey, String(n));
+    } catch {}
+  };
+
+  // ---------- Emoji Reactions (NEW) ----------
+  // Users can pick one or more quick, expressive reactions.
+  // Persisted to sessionStorage (scoped to this recipe).
+  const REACTIONS = [
+    { key: "delicious", emoji: "😋", label: "Delicious" },
+    { key: "must_try", emoji: "🤩", label: "Must-try" },
+    { key: "easy", emoji: "👍", label: "Easy to make" },
+    { key: "longer", emoji: "🕒", label: "Took longer" },
+    { key: "spicy", emoji: "🌶️", label: "Spicy but good" },
+  ];
+  const reactionKey = useMemo(() => `${recipeKey}:reactions`, [recipeKey]);
+  const [reactions, setReactions] = useState([]);
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(reactionKey);
+      setReactions(raw ? JSON.parse(raw) : []);
+    } catch {
+      setReactions([]);
+    }
+  }, [reactionKey]);
+
+  const toggleReaction = (rKey) => {
+    setReactions((prev) => {
+      const next = prev.includes(rKey) ? prev.filter((k) => k !== rKey) : [...prev, rKey];
+      try {
+        sessionStorage.setItem(reactionKey, JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  };
+
+  const clearReactions = () => {
+    setReactions([]);
+    try {
+      sessionStorage.setItem(reactionKey, JSON.stringify([]));
+    } catch {}
   };
 
   // ---------- Share (same behavior as History page) ----------
   const [copied, setCopied] = useState(false);
-  const pageUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/recipe/${id}`
-      : "";
+  const pageUrl = typeof window !== "undefined" ? `${window.location.origin}/recipe/${id}` : "";
 
   const handleShare = async () => {
     const title = recipe?.recipe_name || "Recipe";
+    // Optional: append reactions in share text if any selected
+    const selectedReactions = REACTIONS.filter((r) => reactions.includes(r.key))
+      .map((r) => `${r.emoji} ${r.label}`)
+      .join(" · ");
+    const text = selectedReactions ? `My take: ${selectedReactions}` : undefined;
+
     try {
       if (navigator.share) {
-        await navigator.share({ title, url: pageUrl });
+        await navigator.share({ title, url: pageUrl, text });
       } else {
-        await navigator.clipboard?.writeText(pageUrl);
+        await navigator.clipboard?.writeText(pageUrl + (text ? `\n\n${text}` : ""));
         setCopied(true);
         setTimeout(() => setCopied(false), 1200);
       }
@@ -167,7 +214,9 @@ export default function RecipePage() {
     <div className="rp-root">
       <header className="rp-hero">
         <div className="rp-hero-inner">
-          <Link to="/" className="rp-back">← Back to home</Link>
+          <Link to="/" className="rp-back">
+            ← Back to home
+          </Link>
           <h1 className="rp-title">{recipe_name}</h1>
 
           {/* HERO STATS — show selected values, not API recalcs */}
@@ -210,11 +259,7 @@ export default function RecipePage() {
         <section className="rp-card rp-card--ing">
           <h2 className="rp-h2">Ingredients</h2>
           <ul className="rp-ingredients">
-            {ingredients.length ? (
-              ingredients.map((it, i) => <li key={i}>{it}</li>)
-            ) : (
-              <li>—</li>
-            )}
+            {ingredients.length ? ingredients.map((it, i) => <li key={i}>{it}</li>) : <li>—</li>}
           </ul>
         </section>
 
@@ -266,8 +311,12 @@ export default function RecipePage() {
                   return (
                     <li
                       key={i}
-                      className={`rp-step ${done ? "rp-step-done" : ""} ${finalCompleted ? "rp-step-final" : ""} ${isLocked ? "rp-step-locked" : ""}`}
-                      onClick={() => { if (!disabled) toggleStep(n); }}
+                      className={`rp-step ${done ? "rp-step-done" : ""} ${finalCompleted ? "rp-step-final" : ""} ${
+                        isLocked ? "rp-step-locked" : ""
+                      }`}
+                      onClick={() => {
+                        if (!disabled) toggleStep(n);
+                      }}
                       role="button"
                       aria-pressed={done}
                       aria-disabled={disabled}
@@ -285,7 +334,10 @@ export default function RecipePage() {
                       <button
                         type="button"
                         className={`rp-step-toggle ${done ? "is-done" : ""}`}
-                        onClick={(e) => { e.stopPropagation(); if (!disabled) toggleStep(n); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!disabled) toggleStep(n);
+                        }}
                         disabled={disabled}
                         aria-pressed={done}
                       >
@@ -297,7 +349,9 @@ export default function RecipePage() {
               ) : (
                 <li className="rp-step">
                   <div className="rp-badge">—</div>
-                  <div className="rp-step-body"><div className="rp-step-text">—</div></div>
+                  <div className="rp-step-body">
+                    <div className="rp-step-text">—</div>
+                  </div>
                 </li>
               )}
             </ol>
@@ -306,29 +360,42 @@ export default function RecipePage() {
           {/* Sticky Actions column */}
           <aside className="rp-actions-col">
             <div className="rp-card rp-actions-sidebar" aria-label="Actions">
-              <h3 className="rp-actions-title">Rate & Share</h3>
+              <h3 className="rp-actions-title">Quick Reactions</h3>
 
-              {/* Stars */}
-              <div className="rp-stars" aria-label="Rate this recipe" role="radiogroup">
-                {[1, 2, 3, 4, 5].map((n) => {
-                  const active = (hoverStar || rating) >= n;
+              {/* Emoji Reactions (multi-select chips) */}
+              <div className="rp-reactions" role="group" aria-label="Emoji reactions">
+                {REACTIONS.map((r) => {
+                  const active = reactions.includes(r.key);
                   return (
                     <button
-                      key={n}
-                      className={`rp-star ${active ? "is-active" : ""}`}
-                      onMouseEnter={() => setHoverStar(n)}
-                      onMouseLeave={() => setHoverStar(0)}
-                      onClick={() => setStar(n)}
-                      aria-label={`${n} star${n > 1 ? "s" : ""}`}
-                      role="radio"
-                      aria-checked={rating === n}
+                      key={r.key}
                       type="button"
+                      className={`rp-reaction ${active ? "is-active" : ""}`}
+                      onClick={() => toggleReaction(r.key)}
+                      aria-pressed={active}
+                      title={r.label}
                     >
-                      ★
+                      <span className="rp-reaction-emoji" aria-hidden>
+                        {r.emoji}
+                      </span>
+                      <span className="rp-reaction-label">{r.label}</span>
+                      {active && <span className="rp-reaction-check" aria-hidden>✓</span>}
                     </button>
                   );
                 })}
               </div>
+
+              {reactions.length > 0 && (
+                <button type="button" className="rp-reaction-clear" onClick={clearReactions}>
+                  Clear reactions
+                </button>
+              )}
+
+              {/* Optional divider */}
+              <div className="rp-actions-divider" />
+
+              <h3 className="rp-actions-title">Share this recipe</h3>
+
 
               {/* Share */}
               <button className="rp-share-btn" type="button" onClick={handleShare}>
@@ -340,34 +407,34 @@ export default function RecipePage() {
         </div>
       </main>
 
-      {/* Confetti — multiple icons */}
-{/* Confetti – radial */}
-{burst && (
-  <div className="rp-burst--radial" aria-hidden="true">
-    {Array.from({ length:48 }).map((_, i) => {
-      const icons = ["🎉","🎊","✨","💫","🌟","🥳","🍾","🎶"];
-      const icon = icons[Math.floor(Math.random()*icons.length)];
-      const angle = Math.random()*360;
-      const dist  = 140 + Math.random()*180;      // px
-      const dx    = Math.cos(angle*Math.PI/180)*dist;
-      const dy    = Math.sin(angle*Math.PI/180)*dist;
-      return (
-        <span
-          key={i}
-          className="burst-icon"
-          style={{
-            "--dx": `${dx}px`,
-            "--dy": `${dy}px`,
-            "--dur": `${0.9 + Math.random()*0.5}s`,
-            "--delay": `${Math.random()*0.2}s`,
-            fontSize: `${16 + Math.random()*12}px`
-          }}
-        >{icon}</span>
-      );
-    })}
-  </div>
-)}
-
+      {/* Confetti – radial */}
+      {burst && (
+        <div className="rp-burst--radial" aria-hidden="true">
+          {Array.from({ length: 48 }).map((_, i) => {
+            const icons = ["🎉", "🎊", "✨", "💫", "🌟", "🥳", "🍾", "🎶"];
+            const icon = icons[Math.floor(Math.random() * icons.length)];
+            const angle = Math.random() * 360;
+            const dist = 140 + Math.random() * 180; // px
+            const dx = Math.cos((angle * Math.PI) / 180) * dist;
+            const dy = Math.sin((angle * Math.PI) / 180) * dist;
+            return (
+              <span
+                key={i}
+                className="burst-icon"
+                style={{
+                  "--dx": `${dx}px`,
+                  "--dy": `${dy}px`,
+                  "--dur": `${0.9 + Math.random() * 0.5}s`,
+                  "--delay": `${Math.random() * 0.2}s`,
+                  fontSize: `${16 + Math.random() * 12}px`,
+                }}
+              >
+                {icon}
+              </span>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
