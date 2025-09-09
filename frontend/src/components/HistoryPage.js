@@ -46,7 +46,7 @@ function toDateSafe(v) {
   if (typeof v === "string") {
     let s = v.trim();
 
-    // "YYYY-MM-DD HH:mm:ss(.ffffff)" -> "YYYY-MM-DDTHH:mm:ss.fff"
+    
     s = s.replace(" ", "T");
     // trim fractional seconds to ms precision
     s = s.replace(/(\.\d{3})\d+$/, "$1");
