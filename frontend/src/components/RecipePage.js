@@ -18,7 +18,7 @@ export default function RecipePage() {
     let alive = true;
     setLoading(true);
     axios
-      .get(`http://localhost:8000/recipe/${id}`)
+      .get(`https://api.kyoolapp.com/recipe/${id}`)
       .then((res) => {
         if (!alive) return;
         // IMPORTANT: state/prev (user selections) override API
