@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import FoodGPT from './components/FoodGPT';
 import RecipePage from './components/RecipePage';
+import WaterReminder from "./components/WaterReminder";
 import Login from './components/Login';
 import Signup from './components/Signup';
 import HistoryPage from './components/HistoryPage';
@@ -225,14 +226,17 @@ export default function App() {
 
   const displayName = user.displayName || user.email;
 
-  return (
-    <Routes>
-      <Route
-        path="/"
-        element={<HomeScreen displayName={displayName} history={history} onAddHistory={handleAddHistory} />}
-      />
-      <Route path="/history" element={<HistoryPage history={history} />} />
-      <Route path="/recipe/:id" element={<RecipePage />} />
-    </Routes>
+ return (
+    <>
+      <Routes>
+        {/* your routes unchanged */}
+        <Route path="/" element={<HomeScreen displayName={displayName} history={history} onAddHistory={handleAddHistory} />} />
+        <Route path="/history" element={<HistoryPage history={history} />} />
+        <Route path="/recipe/:id" element={<RecipePage />} />
+      </Routes>
+
+      {/* 👇 Floating bottle + reminder card */}
+      <WaterReminder userId={displayName} />
+    </>
   );
 }
