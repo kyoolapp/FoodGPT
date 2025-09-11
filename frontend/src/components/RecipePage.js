@@ -284,7 +284,7 @@ export default function RecipePage() {
               <div key={key} className="rp-nrow">
                 <span>{key.toLowerCase()}</span>
                 <span>
-                  {typeof val === "object" ? `${val.quantity} ${val.item}` : val}
+                  {val}
                   {key.toLowerCase().includes("sodium") ? "mg" : " g"}
                 </span>
               </div>
