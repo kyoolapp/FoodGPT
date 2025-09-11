@@ -227,12 +227,22 @@ export default function HistoryPage({ history }) {
                         >
                           <h3 className="gi-title">{item.recipe_name || "Recipe"}</h3>
 
-                          <div className="gi-chips">
-                            {chips.map((c, i) => <span key={i} className="chip chip-soft">{c}</span>)}
-                            {(item.ingredients || []).length > chips.length && (
-                              <span className="chip chip-soft chip-more">+{(item.ingredients || []).length - chips.length}</span>
-                            )}
-                          </div>
+                        <div className="gi-chips">
+                            {chips.map((c, i) => (
+                              <span key={i} className="chip chip-soft">
+                              {typeof c === "string"
+        ? c
+        : c && typeof c === "object"
+          ? `${c.quantity ?? ""} ${c.item ?? ""}`.trim()
+          : ""}
+    </span>
+  ))}
+  {(item.ingredients || []).length > chips.length && (
+    <span className="chip chip-soft chip-more">
+      +{(item.ingredients || []).length - chips.length}
+    </span>
+  )}
+</div>
 
                           <div className="gi-meta">
                             {time ? <span>⏱ {time}</span> : null}
