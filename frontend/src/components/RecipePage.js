@@ -109,16 +109,9 @@ export default function RecipePage() {
 
   // Lock behavior: if one is already selected and user clicks another, ignore.
   const chooseReaction = (rKey) => {
-    setReaction((prev) => {
-      if (prev && prev !== rKey) {
-        // another option is already selected → ignore
-        return prev;
-      }
-      const next = prev === rKey ? "" : rKey; // toggle same one to clear
-      try { sessionStorage.setItem(reactionKey, JSON.stringify(next)); } catch {}
-      return next;
-    });
-  };
+  setReaction(rKey);
+  try { sessionStorage.setItem(reactionKey, JSON.stringify(rKey)); } catch {}
+};
 
   const clearReaction = () => {
     setReaction("");
@@ -268,9 +261,11 @@ export default function RecipePage() {
               <div key={key} className="rp-nrow">
                 <span>{key.toLowerCase()}</span>
                 <span>
-                  {val}
-                  {key.toLowerCase().includes("sodium") ? "mg" : " g"}
-                </span>
+  {typeof val === "object"
+    ? `${val.quantity} ${val.item}`
+    : val}
+  {key.toLowerCase().includes("sodium") ? "mg" : " g"}
+</span>
               </div>
             ))}
           </div>
@@ -352,9 +347,8 @@ export default function RecipePage() {
                       onClick={() => chooseReaction(r.key)}
                       role="radio"
                       aria-checked={active}
-                      aria-disabled={locked}
-                      disabled={locked}
-                      tabIndex={locked ? -1 : 0}
+                      
+                      tabIndex={0}
                       title={r.label}
                     >
                       <span className="rp-reaction-emoji" aria-hidden>{r.emoji}</span>
