@@ -59,7 +59,7 @@ async def generate_recipe(request: Request):
             "Return the answer strictly in this JSON format, no extra text:\n\n"
             "{\n"
                 '  "recipe_name": "string",\n'
-                '  "serving": "number",\n'
+                '  "serving": "string",\n'
                 '  "time_option": "string",\n'
                 '  "ingredients": ["string", "string", "string"],\n'
                 '  "instructions": ["string", "string", "string"],\n'
@@ -99,7 +99,7 @@ async def generate_recipe(request: Request):
         "}\n"
     ) 
     #print("\n\nDEBUG prompt:", prompt)
-    async with httpx.AsyncClient(timeout=120) as client: 
+    async with httpx.AsyncClient(timeout=360) as client: 
         response = await client.post( 
        f"http://localhost:11434/api/generate", 
             json={
