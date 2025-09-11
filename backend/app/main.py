@@ -46,33 +46,37 @@ async def generate_recipe(request: Request):
         dish_name = data.get("dish_name")
         if not dish_name: return {"error": "No dish name provided."}
         prompt = (
-            f"You are a professional cookbook author. Suggest a healthy, complete AUTHENTIC recipe for the dish: {dish_name}. "
-            "The recipe must strictly follow traditional preparation methods used in its authentic cuisine. "
-            "Do not invent or include unrelated or unusual ingredients (for example: egg whites, coconut, lemon juice, baking soda) unless they are truly part of the authentic version of this dish. "
-            "If the dish is traditionally vegetarian or vegan, keep it that way. "
-            "Ensure the recipe contains only realistic, commonly available ingredients for this cuisine. "
-            "Instructions must be step-by-step, detailed, and accurate, with realistic preparation and cooking times. "
-            "Use U.S. kitchen units by default (tbsp, tsp, cups, oz) and add metric in parentheses when quantities are ≥ 100 g/ml. "
-            "Do not skip essential steps or shorten the process unnaturally. "
-            "Return strictly numbers only for nutritional values and calories (do not include units like 'g' or 'kcal'). "
-            "If unsure, prefer omitting an ingredient over inventing one.\n\n"
-            "Return the answer strictly in this JSON format, no extra text:\n\n"
-            "{\n"
-                '  "recipe_name": "string",\n'
-                '  "serving": "string",\n'
-                '  "time_option": "string",\n'
-                '  "ingredients": ["string", "string", "string"],\n'
-                '  "instructions": ["string", "string", "string"],\n'
-                '  "estimated_calories": "number",\n'
-                '  "nutritional_values": {\n'
-                '      "protein": "number",\n'
-                '      "fat": "number",\n'
-                '      "carbohydrates": "number",\n'
-                '      "sugar": "number",\n'
-                '      "fiber": "number"\n'
-            "  }\n"
-            "}\n"
-        )
+    f"You are a professional cookbook author and culinary historian.\n"
+    f"Your job is to provide the ONE authentic, traditional recipe for the dish: {dish_name}.\n\n"
+    "RULES:\n"
+    "- Always return the authentic recipe as it is traditionally prepared in its original region/culture.\n"
+    "- Do NOT invent new versions, shortcuts, or modern variations.\n"
+    "- Do NOT mix this dish with recipes of similar names.\n"
+    "- Use only ingredients, methods, and flavor balances that are historically correct for the dish.\n"
+    "- If the authentic recipe differs by region, select the most widely recognized traditional version.\n"
+    "- If you are unsure of the authentic recipe, return null instead of guessing.\n"
+    "- Never produce multiple variations. Only ONE canonical recipe must be shown consistently across users.\n"
+    "- Vegetarian/vegan rules must be respected if they are essential to the authenticity of the dish.\n\n"
+    "FORMAT:\n"
+    "Return strictly in this JSON format, with no extra commentary:\n"
+    "{\n"
+    '  "recipe_name": "string",\n'
+    '  "serving": "string",\n'
+    '  "time_option": "string",\n'
+    '  "ingredients": ["string", "string", "string"],\n'
+    '  "instructions": ["string", "string", "string"],\n'
+    '  "estimated_calories": "number",\n'
+    '  "nutritional_values": {\n'
+    '      "protein": "number",\n'
+    '      "fat": "number",\n'
+    '      "carbohydrates": "number",\n'
+    '      "sugar": "number",\n'
+    '      "fiber": "number"\n'
+    "  }\n"
+    "}\n\n"
+    "If unsure about any value, use null.\n"
+    "Review carefully to ensure JSON is complete and valid."
+)
     else:
         if not ingredients: return {"error": "No ingredients provided."} 
         if oven_option:
