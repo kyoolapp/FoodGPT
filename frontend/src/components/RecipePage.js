@@ -82,7 +82,7 @@ export default function RecipePage() {
     try { sessionStorage.setItem(ratingKey, String(n)); } catch {}
   };
 
-  // ---------- Emoji Reactions (Single-select + LOCK other options) ----------
+  // ---------- Emoji Reactions (Single-select) ----------
   const REACTIONS = [
     { key: "delicious", emoji: "😋", label: "Delicious" },
     { key: "must_try", emoji: "🤩", label: "Must-try" },
@@ -98,7 +98,6 @@ export default function RecipePage() {
       const raw = sessionStorage.getItem(reactionKey);
       if (!raw) return;
       const parsed = JSON.parse(raw);
-      // Back-compat for old array storage
       if (Array.isArray(parsed)) {
         setReaction(parsed[0] || "");
       } else if (typeof parsed === "string") {
@@ -107,11 +106,10 @@ export default function RecipePage() {
     } catch { /* ignore */ }
   }, [reactionKey]);
 
-  // Lock behavior: if one is already selected and user clicks another, ignore.
   const chooseReaction = (rKey) => {
-  setReaction(rKey);
-  try { sessionStorage.setItem(reactionKey, JSON.stringify(rKey)); } catch {}
-};
+    setReaction(rKey);
+    try { sessionStorage.setItem(reactionKey, JSON.stringify(rKey)); } catch {}
+  };
 
   const clearReaction = () => {
     setReaction("");
@@ -198,7 +196,32 @@ export default function RecipePage() {
     <div className="rp-root">
       <header className="rp-hero">
         <div className="rp-hero-inner">
-          <Link to="/" className="rp-back">← Back to home</Link>
+          {/* Top bar: Back on the left, Share on the right */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 12,
+            }}
+          >
+            <Link to="/" className="rp-back">← Back to home</Link>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <button className="rp-share-btn" type="button" onClick={handleShare}>
+                <span aria-hidden>🔗</span> Share
+              </button>
+              {copied && (
+                <span
+                  className="rp-share-hint"
+                  style={{ fontSize: 12, opacity: 0.9 }}
+                >
+                  Link copied!
+                </span>
+              )}
+            </div>
+          </div>
+
           <h1 className="rp-title">{recipe_name}</h1>
 
           {/* HERO STATS — show selected values, not API recalcs */}
@@ -261,11 +284,9 @@ export default function RecipePage() {
               <div key={key} className="rp-nrow">
                 <span>{key.toLowerCase()}</span>
                 <span>
-  {typeof val === "object"
-    ? `${val.quantity} ${val.item}`
-    : val}
-  {key.toLowerCase().includes("sodium") ? "mg" : " g"}
-</span>
+                  {typeof val === "object" ? `${val.quantity} ${val.item}` : val}
+                  {key.toLowerCase().includes("sodium") ? "mg" : " g"}
+                </span>
               </div>
             ))}
           </div>
@@ -334,20 +355,18 @@ export default function RecipePage() {
             <div className="rp-card rp-actions-sidebar" aria-label="Actions">
               <h3 className="rp-actions-title">Quick Reactions</h3>
 
-              {/* Single-select radiogroup (others disabled when one picked) */}
+              {/* Single-select radiogroup */}
               <div className="rp-reactions" role="radiogroup" aria-label="Emoji reactions">
                 {REACTIONS.map((r) => {
                   const active = reaction === r.key;
-                  const locked = !!reaction && !active; // another option is selected
                   return (
                     <button
                       key={r.key}
                       type="button"
-                      className={`rp-reaction ${active ? "is-active" : ""} ${locked ? "is-locked" : ""}`}
+                      className={`rp-reaction ${active ? "is-active" : ""}`}
                       onClick={() => chooseReaction(r.key)}
                       role="radio"
                       aria-checked={active}
-                      
                       tabIndex={0}
                       title={r.label}
                     >
@@ -363,14 +382,6 @@ export default function RecipePage() {
                   Clear selection
                 </button>
               )}
-
-              <div className="rp-actions-divider" />
-
-              <h3 className="rp-actions-title">Share this recipe</h3>
-              <button className="rp-share-btn" type="button" onClick={handleShare}>
-                <span aria-hidden>🔗</span> Share
-              </button>
-              {copied && <div className="rp-share-hint">Link copied!</div>}
             </div>
           </aside>
         </div>
